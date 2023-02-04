@@ -9,8 +9,8 @@ import Guest from "@/Layouts/GuestLayout";
 export default function Register() {
     const { data, setData, post, processing, errors, reset } = useForm({
         name: "",
-        email: "",
         role: "",
+        npwpd: "",
         password: "",
         password_confirmation: "",
     });
@@ -41,37 +41,37 @@ export default function Register() {
             <Head title="Register" />
             <form onSubmit={submit}>
                 <div>
-                    <InputLabel forInput="name" value="Name" />
+                    <InputLabel forInput="name" value="Nama" />
 
                     <TextInput
                         id="name"
                         name="name"
                         value={data.name}
                         className="mt-1 block w-full"
-                        autoComplete="name"
+                        autoComplete="off"
                         isFocused={true}
                         handleChange={onHandleChange}
-                        required
+                        // required
                     />
 
                     <InputError message={errors.name} className="mt-2" />
                 </div>
 
                 <div className="mt-4">
-                    <InputLabel forInput="email" value="Email" />
+                    <InputLabel forInput="npwpd" value="NPWPD" />
 
                     <TextInput
-                        id="email"
-                        type="email"
-                        name="email"
-                        value={data.email}
+                        id="npwpd"
+                        type="text"
+                        name="npwpd"
+                        value={data.npwpd}
                         className="mt-1 block w-full"
-                        autoComplete="username"
+                        autoComplete="off"
                         handleChange={onHandleChange}
-                        required
+                        // required
                     />
 
-                    <InputError message={errors.email} className="mt-2" />
+                    <InputError message={errors.npwpd} className="mt-2" />
                 </div>
                 <div className="mt-4">
                     <InputLabel forInput="role" value="Role" />
@@ -82,7 +82,7 @@ export default function Register() {
                         className="block w-full mt-1 rounded-md"
                         onChange={onHandleChange}
                     >
-                        <option value="" disabled selected>
+                        <option value="" disabled selected hidden>
                             -- Select Role --
                         </option>
                         <option value="admin">Admin</option>
@@ -101,7 +101,7 @@ export default function Register() {
                         className="mt-1 block w-full"
                         autoComplete="new-password"
                         handleChange={onHandleChange}
-                        required
+                        // required
                     />
 
                     <InputError message={errors.password} className="mt-2" />
@@ -120,7 +120,7 @@ export default function Register() {
                         value={data.password_confirmation}
                         className="mt-1 block w-full"
                         handleChange={onHandleChange}
-                        required
+                        // required
                     />
 
                     <InputError
