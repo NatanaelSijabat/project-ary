@@ -105,4 +105,36 @@ class PajakController extends Controller
 
         return redirect(route('pajak.index'));
     }
+
+    // public function addToCart($id)
+    // {
+    //     $pajak = Pajak::find($id);
+
+    //     if (!$pajak) {
+    //         abort(404);
+    //     }
+
+    //     $cart = session()->get('cart');
+
+    //     if (!$cart) {
+    //         $cart = [
+    //             $id => [
+    //                 "kode" => $pajak->kode,
+    //                 "nama" => $pajak->nama,
+    //             ]
+    //         ];
+
+    //         session()->put('cart', $cart);
+    //         return redirect()->back()->with('success', 'Pajak added to Cart');
+    //     }
+
+    //     $cart[$id] = [
+    //         "kode" => $pajak->kode,
+    //         "nama" => $pajak->nama,
+    //     ];
+
+    //     session()->put('cart', $cart);
+
+    //     return redirect()->back()->with('succes', "pajak added to cart");
+    // }
 }

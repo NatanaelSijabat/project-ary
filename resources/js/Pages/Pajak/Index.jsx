@@ -7,17 +7,13 @@ import Pajak from "@/Components/Pajak";
 
 export default function Index({ auth, pajaks }) {
     const { data, setData, post, processing, reset, errors } = useForm({
-        nama: "",
         kode: "",
+        nama: "",
     });
 
     const submit = (e) => {
         e.preventDefault();
-        post(
-            route("pajak.store", {
-                onSuccess: () => reset(),
-            })
-        );
+        post(route("pajak.store"), { onSuccess: () => reset() });
     };
 
     return (

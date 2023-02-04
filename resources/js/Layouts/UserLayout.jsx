@@ -5,7 +5,7 @@ import NavLink from "@/Components/NavLink";
 import ResponsiveNavLink from "@/Components/ResponsiveNavLink";
 import { Link } from "@inertiajs/react";
 
-export default function Authenticated({ auth, header, children }) {
+export default function UserLayout({ auth, header, children }) {
     const [showingNavigationDropdown, setShowingNavigationDropdown] =
         useState(false);
 
@@ -23,23 +23,16 @@ export default function Authenticated({ auth, header, children }) {
 
                             <div className="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
                                 <NavLink
-                                    href={route("adminDashboard")}
-                                    active={route().current("adminDashboard")}
+                                    href={route("userDashboard")}
+                                    active={route().current("userDashboard")}
                                 >
                                     Dashboard
                                 </NavLink>
-
                                 <NavLink
-                                    href={route("user.index")}
-                                    active={route().current("user.index")}
+                                    href={route("transaksi.index")}
+                                    active={route().current("transaksi.index")}
                                 >
-                                    Users
-                                </NavLink>
-                                <NavLink
-                                    href={route("pajak.index")}
-                                    active={route().current("pajak.index")}
-                                >
-                                    Kategori Pajak
+                                    Transaksi
                                 </NavLink>
                             </div>
                         </div>
@@ -144,18 +137,6 @@ export default function Authenticated({ auth, header, children }) {
                             active={route().current("dashboard")}
                         >
                             Dashboard
-                        </ResponsiveNavLink>
-                        <ResponsiveNavLink
-                            href={route("user.index")}
-                            active={route().current("user.index")}
-                        >
-                            Users
-                        </ResponsiveNavLink>
-                        <ResponsiveNavLink
-                            href={route("pajak.index")}
-                            active={route().current("pajak.index")}
-                        >
-                            Kategori Pajak
                         </ResponsiveNavLink>
                     </div>
 

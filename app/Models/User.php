@@ -21,6 +21,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role',
     ];
 
     /**
@@ -45,5 +46,10 @@ class User extends Authenticatable
     public function pajak()
     {
         return $this->hasMany(Pajak::class);
+    }
+
+    public function transaksi()
+    {
+        return $this->hasMany(Transaksi::class);
     }
 }

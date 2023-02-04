@@ -1,7 +1,10 @@
 <?php
 
+use App\Http\Controllers\Auth\RedirectAuthenticatedUsersController;
 use App\Http\Controllers\PajakController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\TransaksiController;
+use App\Http\Controllers\UserController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -18,17 +21,23 @@ use Inertia\Inertia;
 */
 
 Route::get('/', function () {
-    return Inertia::render('Welcome', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
-    ]);
+    return Inertia::render('Auth/Login');
 });
 
-Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::group(['middleware' => 'auth'], function () {
+    Route::inertia('/dashboard', 'Dashboard')->name('dashboard');
+    Route::get('/redirectAuthenticatedUsers', [RedirectAuthenticatedUsersController::class, 'home']);
+    Route::group(['middleware' => 'checkRole:admin'], function () {
+        Route::inertia('/adminDashboard', 'AdminDashboard')->name('adminDashboard');
+        Route::get('/user', [UserController::class, 'index'])->name('user.index');
+    });
+    Route::group(['middleware' => 'checkRole:user'], function () {
+        Route::inertia('/userDashboard', 'UserDashboard')->name('userDashboard');
+        Route::resource('/transaksi', TransaksiController::class)
+            ->only('index', 'create', 'store')
+            ->middleware('auth', 'verified');
+    });
+});
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -36,7 +45,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-Route::resource('pajak', PajakController::class)
+Route::resource('/pajak', PajakController::class)
     ->only('index', 'store', 'update', 'destroy')
     ->middleware('auth', 'verified');
 
