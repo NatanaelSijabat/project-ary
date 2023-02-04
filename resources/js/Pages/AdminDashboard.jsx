@@ -18,7 +18,7 @@ export default function AdminDashboard(props) {
                 <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
                     <div className="overflow-hidden bg-white shadow-sm sm:rounded-lg">
                         <div className="p-6 bg-white border-b border-gray-200">
-                            You're logged in as Admin
+                            Welcome Back {props.auth.user.name}
                         </div>
                     </div>
                 </div>

@@ -41,6 +41,12 @@ export default function Authenticated({ auth, header, children }) {
                                 >
                                     Kategori Pajak
                                 </NavLink>
+                                <NavLink
+                                    href={route("cek.index")}
+                                    active={route().current("cek.index")}
+                                >
+                                    Periksa Transaksi
+                                </NavLink>
                             </div>
                         </div>
 
@@ -156,6 +162,12 @@ export default function Authenticated({ auth, header, children }) {
                             active={route().current("pajak.index")}
                         >
                             Kategori Pajak
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink
+                            href={route("cek.index")}
+                            active={route().current("cek.index")}
+                        >
+                            Periksa Transaksi
                         </ResponsiveNavLink>
                     </div>
 

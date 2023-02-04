@@ -125,6 +125,7 @@ export default function Index({ auth, transaksis, pajaks }) {
                                                         e.target.value
                                                     )
                                                 }
+                                                autoComplete="off"
                                             />
                                             <InputLabel
                                                 forInput="jumlah_pendapatan"
@@ -274,6 +275,8 @@ export default function Index({ auth, transaksis, pajaks }) {
                     <div className="flex flex-col">
                         <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
                             <div className="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
+                                <h2>Record Pembayaran Anda : </h2>
+                                <br />
                                 <div className="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
                                     <table className="min-w-full divide-y divide-gray-200">
                                         <thead className="bg-gray-50">
@@ -324,7 +327,7 @@ export default function Index({ auth, transaksis, pajaks }) {
                                                     scope="col"
                                                     className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                                                 >
-                                                    Image
+                                                    File
                                                 </th>
                                                 <th
                                                     scope="col"
@@ -337,17 +340,24 @@ export default function Index({ auth, transaksis, pajaks }) {
                                         <tbody className="bg-white divide-y divide-gray-200">
                                             {transaksis.map(
                                                 (transaksi, index) => (
-                                                    <tr key={index}>
-                                                        <td className="px-6 py-6 whitespace-nowrap">
-                                                            {index + 1}
-                                                        </td>
-                                                        <Transaksi
-                                                            key={transaksi.id}
-                                                            transaksi={
-                                                                transaksi
-                                                            }
-                                                        />
-                                                    </tr>
+                                                    <>
+                                                        {transaksi.user.id ===
+                                                            auth.user.id && (
+                                                            <tr>
+                                                                <td className="px-6 py-6">
+                                                                    {index + 1}
+                                                                </td>
+                                                                <Transaksi
+                                                                    key={
+                                                                        transaksi.id
+                                                                    }
+                                                                    transaksi={
+                                                                        transaksi
+                                                                    }
+                                                                />
+                                                            </tr>
+                                                        )}
+                                                    </>
                                                 )
                                             )}
                                         </tbody>

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\RedirectAuthenticatedUsersController;
+use App\Http\Controllers\CheckTransaksiController;
 use App\Http\Controllers\PajakController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TransaksiController;
@@ -30,11 +31,15 @@ Route::group(['middleware' => 'auth'], function () {
     Route::group(['middleware' => 'checkRole:admin'], function () {
         Route::inertia('/adminDashboard', 'AdminDashboard')->name('adminDashboard');
         Route::get('/user', [UserController::class, 'index'])->name('user.index');
+        Route::resource('/cek', CheckTransaksiController::class)
+            ->only('index', 'update')
+            ->middleware('auth', 'verified');
     });
+
     Route::group(['middleware' => 'checkRole:user'], function () {
         Route::inertia('/userDashboard', 'UserDashboard')->name('userDashboard');
         Route::resource('/transaksi', TransaksiController::class)
-            ->only('index', 'create', 'store')
+            ->only('index', 'store')
             ->middleware('auth', 'verified');
     });
 });
