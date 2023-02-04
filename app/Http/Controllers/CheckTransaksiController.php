@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Transaksi;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -70,9 +71,12 @@ class CheckTransaksiController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Transaksi $transaksi, $id)
     {
-        //
+        // dd($transaksi::where('id', $id));
+        $transaksi::where('id', $id)->update(['isCheck' => 1]);
+
+        return redirect(route('cek.index'));
     }
 
     /**

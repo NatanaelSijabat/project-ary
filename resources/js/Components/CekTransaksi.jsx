@@ -1,5 +1,7 @@
 import React from "react";
 import moment from "moment";
+import PrimaryButton from "./PrimaryButton";
+import { useForm } from "@inertiajs/react";
 
 export default function CekTransaksi({ transaksi }) {
     const status = (result) => {
@@ -17,6 +19,22 @@ export default function CekTransaksi({ transaksi }) {
             );
         }
         return result;
+    };
+
+    const action = (result) => {
+        if (transaksi.isCheck === 0) {
+            result = (
+                <PrimaryButton processing={processing}>Accept</PrimaryButton>
+            );
+        }
+        return result;
+    };
+
+    const { patch, processing } = useForm();
+
+    const submit = (e) => {
+        e.preventDefault();
+        patch(route("cek.update", transaksi.id));
     };
 
     return (
@@ -39,7 +57,9 @@ export default function CekTransaksi({ transaksi }) {
             <td className="px-6 py-6 whitespace-nowrap">{status()}</td>
             <td className="p-6 whitespace-nowrap">
                 <button className="p-4">view</button>
-                <button>accept</button>
+                <form method="POST" onSubmit={submit}>
+                    {action()}
+                </form>
             </td>
         </>
     );
