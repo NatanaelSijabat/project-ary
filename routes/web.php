@@ -3,6 +3,7 @@
 use App\Http\Controllers\Auth\RedirectAuthenticatedUsersController;
 use App\Http\Controllers\CheckTransaksiController;
 use App\Http\Controllers\PajakController;
+use App\Http\Controllers\PdfController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TransaksiController;
 use App\Http\Controllers\UserController;
@@ -41,6 +42,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::resource('/transaksi', TransaksiController::class)
             ->only('index', 'store')
             ->middleware('auth', 'verified');
+        Route::get('/transaksi/pdf/{id}', [PdfController::class, 'generatePDF'])->name('pdf');
     });
 });
 

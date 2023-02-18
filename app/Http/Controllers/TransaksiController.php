@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Models\Pajak;
 use Illuminate\Support\Facades\Validator;
-
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class TransaksiController extends Controller
 {
@@ -16,12 +16,14 @@ class TransaksiController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        return Inertia::render('Transaksi/Index', [
-            'transaksis' => Transaksi::with('user:id,name', 'pajak:id,nama')->latest()->get(),
-            'pajaks' => Pajak::all()
-        ]);
+        $transaksis  = Transaksi::with('user:id,name', 'pajak:id,nama')->latest()->get();
+        $pajaks = Pajak::all();
+
+
+
+        return Inertia::render('Transaksi/Index', ['transaksis' => $transaksis, 'pajaks' => $pajaks]);
     }
 
     /**
@@ -48,11 +50,11 @@ class TransaksiController extends Controller
             'jumlah_pajak' => ['required'],
             'tanggal_awal' => ['required'],
             'tanggal_akhir' => ['required'],
-            'file' => ['required'],
+            'file' => ['required', 'image'],
         ])->validate();
 
         $fileName = time() . '.' . $request->file->extension();
-        $request->file->move(public_path('uploads'), $fileName);
+        $request->file->move(public_path('storage/images'), $fileName);
 
         $validated = ([
             'pajak_id' => $request->pajak_id,

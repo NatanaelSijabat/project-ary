@@ -10,6 +10,8 @@ class Transaksi extends Model
 {
     use HasFactory;
 
+    // protected $id = 'slug';
+
     protected $fillable = [
         'pajak_id', 'nama_usaha', 'jumlah_pendapatan', 'jumlah_pajak', 'tanggal_awal', 'tanggal_akhir', 'file', 'isCheck'
     ];
@@ -17,7 +19,7 @@ class Transaksi extends Model
     protected function name(): Attribute
     {
         return Attribute::make(
-            get: fn ($value) => url('uploads/' . $value),
+            get: fn ($value) => url('storage/images/' . $value),
         );
     }
 

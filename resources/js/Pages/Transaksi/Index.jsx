@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import UserLayout from "@/Layouts/UserLayout";
-import { Head, Link, useForm } from "@inertiajs/react";
+import { Head, useForm } from "@inertiajs/react";
 import Transaksi from "@/Components/Transaksi";
 import Modal from "@/Components/Modal";
 import { XMarkIcon } from "@heroicons/react/24/outline";
@@ -69,9 +69,7 @@ export default function Index({ auth, transaksis, pajaks }) {
                             </button>
 
                             <div className="grid w-full grid-cols-1 items-start gap-y-8 gap-x-6 sm:grid-cols-12 lg:gap-x-8">
-                                <div className="aspect-w-2 aspect-h-3 overflow-hidden rounded-lg bg-gray-100 sm:col-span-4 lg:col-span-5">
-                                    <img alt="image" />
-                                </div>
+                                <div className="aspect-w-2 aspect-h-3 overflow-hidden rounded-lg bg-gray-100 sm:col-span-4 lg:col-span-5"></div>
                                 <div className="sm:col-span-8 lg:col-span-7">
                                     <h2 className="text-2-xl font-bold text-gray-900 sm:pr-12">
                                         Form Pembayaran Pajak
@@ -174,19 +172,6 @@ export default function Index({ auth, transaksis, pajaks }) {
                                                         Rp
                                                     </span>
                                                 </div>
-                                                {/* <input
-                                                    name="jumlah_pajak"
-                                                    type="number"
-                                                    className="block w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm mb-2 pl-8 pr-12"
-                                                    placeholder="0"
-                                                    value={data.jumlah_pajak}
-                                                    onChange={(e) =>
-                                                        setData(
-                                                            "jumlah_pajak",
-                                                            e.target.value
-                                                        )
-                                                    }
-                                                /> */}
                                                 <CurrencyFormat
                                                     className="block w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm mb-2 pl-8 pr-12"
                                                     thousandSeparator={"."}
@@ -327,13 +312,19 @@ export default function Index({ auth, transaksis, pajaks }) {
                                                     scope="col"
                                                     className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                                                 >
-                                                    File
+                                                    Image
                                                 </th>
                                                 <th
                                                     scope="col"
                                                     className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                                                 >
                                                     Status
+                                                </th>
+                                                <th
+                                                    scope="col"
+                                                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                                >
+                                                    Aksi
                                                 </th>
                                             </tr>
                                         </thead>
@@ -343,14 +334,15 @@ export default function Index({ auth, transaksis, pajaks }) {
                                                     <>
                                                         {transaksi.user.id ===
                                                             auth.user.id && (
-                                                            <tr>
+                                                            <tr
+                                                                key={
+                                                                    transaksi.id
+                                                                }
+                                                            >
                                                                 <td className="px-6 py-6">
                                                                     {index + 1}
                                                                 </td>
                                                                 <Transaksi
-                                                                    key={
-                                                                        transaksi.id
-                                                                    }
                                                                     transaksi={
                                                                         transaksi
                                                                     }
