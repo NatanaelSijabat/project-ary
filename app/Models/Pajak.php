@@ -10,7 +10,7 @@ class Pajak extends Model
     use HasFactory;
 
     protected $fillable = [
-        'nama', 'kode'
+        'nama', 'kode', 'user_id'
     ];
 
     public function user()
@@ -21,5 +21,10 @@ class Pajak extends Model
     public function transaksi()
     {
         return $this->hasMany(Transaksi::class);
+    }
+
+    public function kategori()
+    {
+        return $this->hasMany(KategoriPajak::class);
     }
 }

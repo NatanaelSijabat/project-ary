@@ -1,14 +1,28 @@
-import { Link, useForm, usePage } from "@inertiajs/react";
+import { useForm, usePage } from "@inertiajs/react";
 import React, { useState } from "react";
 import InputError from "./InputError";
 import PrimaryButton from "./PrimaryButton";
+import DangerButton from "./DangerButton";
+import { Button, Modal, Table } from "flowbite-react";
+import { FiEdit } from "react-icons/fi";
+import { MdDeleteForever } from "react-icons/md";
+import { HiOutlineExclamationCircle } from "react-icons/hi2";
 
 export default function Pajak({ pajak }) {
     const { auth } = usePage().props;
 
     const [editing, setEditing] = useState(false);
+    const [open, setOpen] = useState(false);
 
-    const { data, setData, patch, clearErrors, reset, errors } = useForm({
+    const {
+        data,
+        setData,
+        patch,
+        clearErrors,
+        reset,
+        errors,
+        delete: destroy,
+    } = useForm({
         kode: pajak.kode,
         nama: pajak.nama,
     });
@@ -17,6 +31,13 @@ export default function Pajak({ pajak }) {
         e.preventDefault();
         patch(route("pajak.update", pajak.id), {
             onSuccess: () => setEditing(false),
+        });
+    };
+
+    const onDelete = (e) => {
+        e.preventDefault();
+        destroy(route("pajak.destroy", pajak.id), {
+            onSuccess: () => setOpen(false),
         });
     };
 
@@ -54,23 +75,46 @@ export default function Pajak({ pajak }) {
                 </div>
             ) : (
                 <>
-                    <td>{pajak.kode}</td>
-                    <td>{pajak.nama}</td>
-                    <td>
-                        <button
-                            onClick={() => setEditing(true)}
-                            className=" w-full text-left text-sm leading-5 text-gray-700 hover:bg-gray-100 focus:bg-gray-100 transition duration-150 ease-in-out"
-                        >
-                            edit
+                    <Table.Cell>{pajak.kode}</Table.Cell>
+                    <Table.Cell>{pajak.nama}</Table.Cell>
+                    <Table.Cell>
+                        <button onClick={() => setEditing(true)}>
+                            <FiEdit className="text-2xl" />
                         </button>
-                        <Link
-                            as="button"
-                            href={route("pajak.destroy", pajak.id)}
-                            method="delete"
+                        <button onClick={() => setOpen(true)}>
+                            <MdDeleteForever className="text-2xl" />
+                        </button>
+                        <Modal
+                            show={open}
+                            onClose={() => setOpen(false)}
+                            size="md"
+                            popup={true}
                         >
-                            Delete
-                        </Link>
-                    </td>
+                            <Modal.Header />
+                            <Modal.Body>
+                                <div className="text-center">
+                                    <HiOutlineExclamationCircle className="mx-auto mb-4 h-14 w-14 text-gray-400 dark:text-gray-200" />
+                                    <h3 className="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">
+                                        Are you sure you want to delete this
+                                        product?
+                                    </h3>
+                                    <form onSubmit={onDelete}>
+                                        <div className="flex justify-center gap-4">
+                                            <DangerButton>
+                                                Yes, I'm Sure
+                                            </DangerButton>
+                                            <Button
+                                                color="gray"
+                                                onClick={() => setOpen(false)}
+                                            >
+                                                No, cancel
+                                            </Button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </Modal.Body>
+                        </Modal>
+                    </Table.Cell>
                 </>
             )}
         </>

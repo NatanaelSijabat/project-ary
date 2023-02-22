@@ -46,6 +46,7 @@ export default function Index({ auth, transaksis, pajaks }) {
 
             <div className="px-16">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
+                    {/* modal */}
                     <div className="flex justify-end m-2 p-2">
                         <button
                             onClick={() => setOpen(true)}
@@ -257,6 +258,8 @@ export default function Index({ auth, transaksis, pajaks }) {
                             </div>
                         </div>
                     </Modal>
+                    {/* end modal */}
+
                     <div className="flex flex-col">
                         <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
                             <div className="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">

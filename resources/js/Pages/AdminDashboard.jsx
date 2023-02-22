@@ -14,7 +14,7 @@ export default function AdminDashboard(props) {
             }
         >
             <Head title="Admin Dashboard" />
-            <div className="py-12">
+            <div className="py-2">
                 <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
                     <div className="overflow-hidden bg-white shadow-sm sm:rounded-lg">
                         <div className="p-6 bg-white border-b border-gray-200">

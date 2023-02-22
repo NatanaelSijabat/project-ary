@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\RedirectAuthenticatedUsersController;
 use App\Http\Controllers\CheckTransaksiController;
+use App\Http\Controllers\KategoriPajakController;
 use App\Http\Controllers\PajakController;
 use App\Http\Controllers\PdfController;
 use App\Http\Controllers\ProfileController;
@@ -25,9 +26,9 @@ use Inertia\Inertia;
 Route::get('/', function () {
     return Inertia::render('Auth/Login');
 });
+Route::inertia('/dashboard', 'Dashboard')->name('dashboard');
 
 Route::group(['middleware' => 'auth'], function () {
-    Route::inertia('/dashboard', 'Dashboard')->name('dashboard');
     Route::get('/redirectAuthenticatedUsers', [RedirectAuthenticatedUsersController::class, 'home']);
     Route::group(['middleware' => 'checkRole:admin'], function () {
         Route::inertia('/adminDashboard', 'AdminDashboard')->name('adminDashboard');
@@ -35,6 +36,17 @@ Route::group(['middleware' => 'auth'], function () {
         Route::resource('/cek', CheckTransaksiController::class)
             ->only('index', 'update')
             ->middleware('auth', 'verified');
+        Route::resource('/pajak', PajakController::class)
+            ->only('index', 'store', 'update', 'destroy')
+            ->middleware('auth', 'verified');
+        Route::resource('/kategori', KategoriPajakController::class)
+            ->only('index', 'store')
+            ->middleware('auth', 'verified');
+        Route::middleware('auth')->group(function () {
+            Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+            Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+            Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+        });
     });
 
     Route::group(['middleware' => 'checkRole:user'], function () {
@@ -43,17 +55,18 @@ Route::group(['middleware' => 'auth'], function () {
             ->only('index', 'store')
             ->middleware('auth', 'verified');
         Route::get('/transaksi/pdf/{id}', [PdfController::class, 'generatePDF'])->name('pdf');
+        Route::middleware('auth')->group(function () {
+            Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+            Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+            Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+        });
     });
 });
 
-Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-});
-
-Route::resource('/pajak', PajakController::class)
-    ->only('index', 'store', 'update', 'destroy')
-    ->middleware('auth', 'verified');
+// Route::middleware('auth')->group(function () {
+//     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+//     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+//     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+// });
 
 require __DIR__ . '/auth.php';

@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Pajak;
+use App\Models\KategoriPajak;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
-class PajakController extends Controller
+class KategoriPajakController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -15,8 +15,10 @@ class PajakController extends Controller
      */
     public function index()
     {
-        return Inertia::render('Pajak/Index', [
-            'pajaks' => Pajak::with('user:id,name')->latest()->get()
+        $kategoris = KategoriPajak::with('pajak:id,nama')->latest()->paginate(6);
+        // dd($kategoris);
+        return Inertia::render('Kategori/Index', [
+            'kategoris' => $kategoris
         ]);
     }
 
@@ -39,22 +41,23 @@ class PajakController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'kode' => 'required|string|max:5',
+            'pajak_id' => 'required',
             'nama' => 'required|string|max:255',
+            'percent' => 'required|numeric|min:1|max:100'
         ]);
 
-        $request->user()->pajak()->create($validated);
+        $request->user()->kategoriPajak()->create($validated);
 
-        return redirect(route('pajak.index'));
+        return redirect(route('kategori.index'));
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Pajak  $pajak
+     * @param  \App\Models\KategoriPajak  $kategoriPajak
      * @return \Illuminate\Http\Response
      */
-    public function show(Pajak $pajak)
+    public function show(KategoriPajak $kategoriPajak)
     {
         //
     }
@@ -62,10 +65,10 @@ class PajakController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\Pajak  $pajak
+     * @param  \App\Models\KategoriPajak  $kategoriPajak
      * @return \Illuminate\Http\Response
      */
-    public function edit(Pajak $pajak)
+    public function edit(KategoriPajak $kategoriPajak)
     {
         //
     }
@@ -74,35 +77,22 @@ class PajakController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Pajak  $pajak
+     * @param  \App\Models\KategoriPajak  $kategoriPajak
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Pajak $pajak)
+    public function update(Request $request, KategoriPajak $kategoriPajak)
     {
-        $this->authorize('update', $pajak);
-
-        $validated = $request->validate([
-            'kode' => 'required|string|max:5',
-            'nama' => 'required|string|max:255',
-        ]);
-
-        $pajak->update($validated);
-
-        return redirect(route('pajak.index'));
+        //
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Pajak  $pajak
+     * @param  \App\Models\KategoriPajak  $kategoriPajak
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Pajak $pajak)
+    public function destroy(KategoriPajak $kategoriPajak)
     {
-        $this->authorize('delete', $pajak);
-
-        $pajak->delete();
-
-        return redirect(route('pajak.index'));
+        //
     }
 }
