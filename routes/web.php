@@ -26,13 +26,15 @@ use Inertia\Inertia;
 Route::get('/', function () {
     return Inertia::render('Auth/Login');
 });
-Route::inertia('/dashboard', 'Dashboard')->name('dashboard');
+// Route::inertia('/dashboard', 'Dashboard')->name('dashboard');
 
 Route::group(['middleware' => 'auth'], function () {
     Route::get('/redirectAuthenticatedUsers', [RedirectAuthenticatedUsersController::class, 'home']);
     Route::group(['middleware' => 'checkRole:admin'], function () {
         Route::inertia('/adminDashboard', 'AdminDashboard')->name('adminDashboard');
-        Route::get('/user', [UserController::class, 'index'])->name('user.index');
+        Route::resource('/user', UserController::class)
+            ->only('index')
+            ->middleware('auth', 'verified');
         Route::resource('/cek', CheckTransaksiController::class)
             ->only('index', 'update')
             ->middleware('auth', 'verified');

@@ -1,14 +1,15 @@
+import { Table } from "flowbite-react";
 import React from "react";
 
 export default function User(props) {
     return (
         <>
-            <td>{props.user.name}</td>
-            <td>{props.user.role}</td>
-            <td>
+            <Table.Cell>{props.user.name}</Table.Cell>
+            <Table.Cell>{props.user.role}</Table.Cell>
+            {/* <Table.Cell>
                 <button>Edit</button>
                 <button>Delete</button>
-            </td>
+            </Table.Cell> */}
         </>
     );
 }
