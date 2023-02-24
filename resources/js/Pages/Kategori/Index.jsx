@@ -1,17 +1,31 @@
 import KategoriPajak from "@/Components/KategoriPajak";
 import Authenticated from "@/Layouts/AuthenticatedLayout";
-import { Head, usePage } from "@inertiajs/react";
-import { Button, Table } from "flowbite-react";
+import { Head, useForm, usePage } from "@inertiajs/react";
+import { Button, Label, Modal, Table, TextInput } from "flowbite-react";
 import React, { useState } from "react";
 import Pagination from "@/Components/Pagination";
+import PrimaryButton from "@/Components/PrimaryButton";
+import Select from "@/Components/Select";
+import InputError from "@/Components/InputError";
 
-export default function Index(props) {
-    const { kategoris } = usePage().props;
-
+export default function Index({ auth, kategoris, pajaks }) {
     const [open, setOpen] = useState(false);
+
+    const { data, setData, post, processing, reset, errors } = useForm({
+        pajak_id: pajaks.id,
+        nama: "",
+        percent: "",
+    });
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        post(route("kategori.store"), {
+            onSuccess: () => setOpen(false) + reset(),
+        });
+    };
     return (
         <Authenticated
-            auth={props.auth}
+            auth={auth}
             header={
                 <h2 className="text-xl font-semibold leading-tight text-gray-800">
                     Kategori Pajak
@@ -28,8 +42,83 @@ export default function Index(props) {
                         Tambah
                     </Button>
                 </div>
-                {/* modal */}
-
+                {/* modal tambah data */}
+                <Modal show={open} onClose={() => setOpen(false)}>
+                    <Modal.Header>Tambah Kategori Pajak</Modal.Header>
+                    <Modal.Body>
+                        <form
+                            method="POST"
+                            onSubmit={handleSubmit}
+                            encType="multipart/form-data"
+                        >
+                            <div>
+                                <div className="mb-1 block">
+                                    <Label
+                                        htmlFor="pajak_id"
+                                        value="Pilih Jenis Pajak"
+                                    />
+                                    <Select
+                                        name="pajak_id"
+                                        onChange={(e) =>
+                                            setData("pajak_id", e.target.value)
+                                        }
+                                        pajaks={pajaks}
+                                    />
+                                </div>
+                            </div>
+                            <div>
+                                <div className="mb-1 block">
+                                    <Label
+                                        htmlFor="kategori"
+                                        value="Nama Kategori"
+                                    />
+                                    <TextInput
+                                        id="kategori"
+                                        type="text"
+                                        value={data.nama}
+                                        onChange={(e) =>
+                                            setData("nama", e.target.value)
+                                        }
+                                        autoComplete="off"
+                                    />
+                                    <InputError message={errors.nama} />
+                                </div>
+                            </div>
+                            <div>
+                                <div className="mb-1 block">
+                                    <Label
+                                        htmlFor="percent"
+                                        value="Percent %"
+                                    />
+                                    <TextInput
+                                        id="percent"
+                                        type="number"
+                                        value={data.percent}
+                                        onChange={(e) =>
+                                            setData("percent", e.target.value)
+                                        }
+                                    />
+                                    <InputError message={errors.percent} />
+                                </div>
+                            </div>
+                            <div className="flex flex-wrap gap-2 justify-end">
+                                <PrimaryButton
+                                    processing={processing}
+                                    className="py-2"
+                                >
+                                    Save
+                                </PrimaryButton>
+                                <Button
+                                    className="mt-2"
+                                    color="gray"
+                                    onClick={() => setOpen(false)}
+                                >
+                                    Cancel
+                                </Button>
+                            </div>
+                        </form>
+                    </Modal.Body>
+                </Modal>
                 {/* end modal */}
                 <div className="relative overflow-x-auto shadow-md mt-3 border rounded">
                     <Table>
@@ -41,12 +130,6 @@ export default function Index(props) {
                             <Table.HeadCell>Action</Table.HeadCell>
                         </Table.Head>
                         <Table.Body className="divide-y">
-                            {/* {kategoris.map((kategori, index) => (
-                                <Table.Row>
-                                    <Table.Cell>{index + 1}</Table.Cell>
-                                    <KategoriPajak kategori={kategori} />
-                                </Table.Row>
-                            ))} */}
                             {kategoris.data.map((kategori, index) => (
                                 <Table.Row key={index}>
                                     <Table.Cell>{index + 1}</Table.Cell>

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import AuthenticateLayout from "@/Layouts/AuthenticatedLayout";
-import { Head, useForm } from "@inertiajs/react";
+import { Head, useForm, usePage } from "@inertiajs/react";
 import Pajak from "@/Components/Pajak";
 import { Button, Label, Modal, Table, TextInput } from "flowbite-react";
 import PrimaryButton from "@/Components/PrimaryButton";
@@ -17,7 +17,10 @@ export default function Index({ auth, pajaks }) {
     const handleSubmit = (e) => {
         e.preventDefault();
         post(route("pajak.store"), {
-            onSuccess: () => setOpen(false) + reset(),
+            onSuccess: () => {
+                setOpen(false);
+                reset();
+            },
         });
     };
 
@@ -64,6 +67,7 @@ export default function Index({ auth, pajaks }) {
                                             onChange={(e) =>
                                                 setData("kode", e.target.value)
                                             }
+                                            autoComplete="off"
                                         />
                                     </div>
                                 </div>
@@ -81,6 +85,7 @@ export default function Index({ auth, pajaks }) {
                                                 setData("nama", e.target.value)
                                             }
                                             value={data.nama}
+                                            autoComplete="off"
                                         />
                                     </div>
                                 </div>

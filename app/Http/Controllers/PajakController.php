@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Pajak;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Inertia\Response;
 
 class PajakController extends Controller
 {
@@ -13,7 +15,7 @@ class PajakController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(): Response
     {
         return Inertia::render('Pajak/Index', [
             'pajaks' => Pajak::with('user:id,name')->latest()->get()
@@ -36,7 +38,7 @@ class PajakController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(Request $request): RedirectResponse
     {
         $validated = $request->validate([
             'kode' => 'required|string|max:5',
@@ -77,7 +79,7 @@ class PajakController extends Controller
      * @param  \App\Models\Pajak  $pajak
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Pajak $pajak)
+    public function update(Request $request, Pajak $pajak): RedirectResponse
     {
         $this->authorize('update', $pajak);
 
@@ -97,7 +99,7 @@ class PajakController extends Controller
      * @param  \App\Models\Pajak  $pajak
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Pajak $pajak)
+    public function destroy(Pajak $pajak): RedirectResponse
     {
         $this->authorize('delete', $pajak);
 

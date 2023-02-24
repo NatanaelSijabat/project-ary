@@ -2,11 +2,11 @@
 
 namespace App\Policies;
 
-use App\Models\Pajak;
+use App\Models\KategoriPajak;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
-class PajakPolicy
+class KategoriPolicy
 {
     use HandlesAuthorization;
 
@@ -25,10 +25,10 @@ class PajakPolicy
      * Determine whether the user can view the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\Pajak  $pajak
+     * @param  \App\Models\KategoriPajak  $kategori
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function view(User $user, Pajak $pajak)
+    public function view(User $user, KategoriPajak $kategori)
     {
         //
     }
@@ -48,34 +48,35 @@ class PajakPolicy
      * Determine whether the user can update the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\Pajak  $pajak
+     * @param  \App\Models\KategoriPajak  $kategori
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function update(User $user, Pajak $pajak): bool
+    public function update(User $user, KategoriPajak $kategori): bool
     {
-        return $pajak->user()->is($user);
+        // return $kategori->user()->is($user);
+        return $user->id === $kategori->user_id;
     }
 
     /**
      * Determine whether the user can delete the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\Pajak  $pajak
+     * @param  \App\Models\KategoriPajak  $kategori
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function delete(User $user, Pajak $pajak)
+    public function delete(User $user, KategoriPajak $kategori)
     {
-        return $this->update($user, $pajak);
+        return $this->update($user, $kategori);
     }
 
     /**
      * Determine whether the user can restore the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\Pajak  $pajak
+     * @param  \App\Models\KategoriPajak  $kategori
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function restore(User $user, Pajak $pajak)
+    public function restore(User $user, KategoriPajak $kategori)
     {
         //
     }
@@ -84,10 +85,10 @@ class PajakPolicy
      * Determine whether the user can permanently delete the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\Pajak  $pajak
+     * @param  \App\Models\KategoriPajak  $kategori
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function forceDelete(User $user, Pajak $pajak)
+    public function forceDelete(User $user, KategoriPajak $kategori)
     {
         //
     }

@@ -3,8 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\KategoriPajak;
+use App\Models\Pajak;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Inertia\Response;
 
 class KategoriPajakController extends Controller
 {
@@ -13,12 +16,13 @@ class KategoriPajakController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(): Response
     {
         $kategoris = KategoriPajak::with('pajak:id,nama')->latest()->paginate(6);
-        // dd($kategoris);
+        $pajaks = Pajak::all();
         return Inertia::render('Kategori/Index', [
-            'kategoris' => $kategoris
+            'kategoris' => $kategoris,
+            'pajaks' => $pajaks
         ]);
     }
 
@@ -38,7 +42,7 @@ class KategoriPajakController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(Request $request): RedirectResponse
     {
         $validated = $request->validate([
             'pajak_id' => 'required',
@@ -57,7 +61,7 @@ class KategoriPajakController extends Controller
      * @param  \App\Models\KategoriPajak  $kategoriPajak
      * @return \Illuminate\Http\Response
      */
-    public function show(KategoriPajak $kategoriPajak)
+    public function show(KategoriPajak $kategori)
     {
         //
     }
@@ -68,7 +72,7 @@ class KategoriPajakController extends Controller
      * @param  \App\Models\KategoriPajak  $kategoriPajak
      * @return \Illuminate\Http\Response
      */
-    public function edit(KategoriPajak $kategoriPajak)
+    public function edit(KategoriPajak $kategori)
     {
         //
     }
@@ -80,9 +84,20 @@ class KategoriPajakController extends Controller
      * @param  \App\Models\KategoriPajak  $kategoriPajak
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, KategoriPajak $kategoriPajak)
+    public function update(Request $request, KategoriPajak $kategori): RedirectResponse
     {
-        //
+        // dd($kategori->id);
+        $this->authorize('update', $kategori);
+
+        $validated = $request->validate([
+            'pajak_id' => 'required',
+            'nama' => 'required|string|max:255',
+            'percent' => 'required|numeric|min:1|max:100'
+        ]);
+
+        $kategori->update($validated);
+
+        return redirect(route("kategori.index"));
     }
 
     /**
@@ -91,8 +106,12 @@ class KategoriPajakController extends Controller
      * @param  \App\Models\KategoriPajak  $kategoriPajak
      * @return \Illuminate\Http\Response
      */
-    public function destroy(KategoriPajak $kategoriPajak)
+    public function destroy(KategoriPajak $kategori): RedirectResponse
     {
-        //
+        $this->authorize('delete', $kategori);
+
+        $kategori->delete();
+
+        return redirect(route('kategori.index'));
     }
 }

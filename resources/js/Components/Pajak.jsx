@@ -9,8 +9,6 @@ import { MdDeleteForever } from "react-icons/md";
 import { HiOutlineExclamationCircle } from "react-icons/hi2";
 
 export default function Pajak({ pajak }) {
-    const { auth } = usePage().props;
-
     const [editing, setEditing] = useState(false);
     const [open, setOpen] = useState(false);
 
@@ -30,14 +28,20 @@ export default function Pajak({ pajak }) {
     const submit = (e) => {
         e.preventDefault();
         patch(route("pajak.update", pajak.id), {
-            onSuccess: () => setEditing(false),
+            onSuccess: () => {
+                setEditing(false);
+                reset();
+            },
         });
     };
 
     const onDelete = (e) => {
         e.preventDefault();
         destroy(route("pajak.destroy", pajak.id), {
-            onSuccess: () => setOpen(false),
+            onSuccess: () => {
+                setOpen(false);
+                reset();
+            },
         });
     };
 
