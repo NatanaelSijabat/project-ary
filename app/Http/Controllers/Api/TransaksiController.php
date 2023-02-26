@@ -7,27 +7,28 @@ use App\Http\Resources\TransaksiResource;
 use App\Models\Transaksi;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Api\BaseController;
+use Illuminate\Database\Query\JoinClause;
+use Illuminate\Support\Facades\DB;
 
 class TransaksiController extends BaseController
 {
     public function index()
     {
-        $transaksi = Transaksi::all();
-        return $this->sendResponse(TransaksiResource::collection($transaksi), 'Transaksi retrieved successfully.');
+        $data = DB::table('transaksis')
+            ->join('users', function (JoinClause $join) {
+                $join->on('transaksis.user_id', '=', 'users.id');
+            })->get();
+
+        return response()->json($data);
     }
 
-    public function show($user_id)
+    public function show($npwpd)
     {
-        // $npwpd = Transaksi::with('user:id,')
-        $data = Transaksi::where('user_id', $user_id)->get();
+        $data = DB::table('transaksis')
+            ->join('users', function (JoinClause $join) {
+                $join->on('transaksis.user_id', '=', 'users.id');
+            })->where('npwpd', $npwpd)->get();
 
-        return $this->sendResponse(TransaksiResource::collection($data), 'Data Transaksi');
+        return response()->json(['transaksi' => $data]);
     }
-
-    // public function search($npwpd)
-    // {
-    //     $search = Transaksi::with('user:id,npwpd')->where('user:id,npwpd', $npwpd)->get();
-
-    //     return $this->sendResponse(TransaksiResource::collection($search), 'Data Kategori');
-    // }
 }

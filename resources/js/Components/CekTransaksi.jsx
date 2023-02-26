@@ -42,16 +42,16 @@ export default function CekTransaksi({ transaksi }) {
     return (
         <>
             <Table.Cell className="px-6 py-6 whitespace-nowrap">
-                {transaksi.user.name}
+                {transaksi.npwpd}
             </Table.Cell>
             <Table.Cell className="px-6 py-6 whitespace-nowrap">
                 {transaksi.nama_usaha}
             </Table.Cell>
             <Table.Cell className="px-6 py-6 whitespace-nowrap">
-                {transaksi.pajak.nama}
+                {transaksi.jenis_nama}
             </Table.Cell>
             <Table.Cell className="px-6 py-6 whitespace-nowrap">
-                {transaksi.kategori_pajak.nama}
+                {transaksi.kategori_nama}
             </Table.Cell>
             <Table.Cell className="px-6 py-6 whitespace-nowrap">
                 {moment(transaksi.tanggal_awal).format("D MMMM YYYY")}

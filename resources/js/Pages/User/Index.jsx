@@ -21,6 +21,7 @@ export default function Index(props) {
                         <Table.Head className="bg-lime-300">
                             <Table.HeadCell>No</Table.HeadCell>
                             <Table.HeadCell>Nama</Table.HeadCell>
+                            <Table.HeadCell>NPWPD</Table.HeadCell>
                             <Table.HeadCell>Role</Table.HeadCell>
                         </Table.Head>
                         <Table.Body className="divide-y">
