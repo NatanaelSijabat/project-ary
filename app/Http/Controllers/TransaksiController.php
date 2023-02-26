@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\KategoriPajak;
 use App\Models\Transaksi;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -20,10 +21,12 @@ class TransaksiController extends Controller
     {
         $transaksis  = Transaksi::with('user:id,name', 'pajak:id,nama')->latest()->get();
         $pajaks = Pajak::all();
+        $kategoris = KategoriPajak::all();
 
-
-
-        return Inertia::render('Transaksi/Index', ['transaksis' => $transaksis, 'pajaks' => $pajaks]);
+        return Inertia::render(
+            'Transaksi/Index',
+            ['transaksis' => $transaksis, 'kategoris' => $kategoris, 'pajaks' => $pajaks]
+        );
     }
 
     /**
@@ -45,12 +48,13 @@ class TransaksiController extends Controller
     {
         Validator::make($request->all(), [
             'pajak_id' => ['required'],
+            'kategori_pajak_id' => ['required'],
             'nama_usaha' => ['required'],
             'jumlah_pendapatan' => ['required'],
             'jumlah_pajak' => ['required'],
             'tanggal_awal' => ['required'],
             'tanggal_akhir' => ['required'],
-            'file' => ['required', 'image'],
+            'file' => ['required'],
         ])->validate();
 
         $fileName = time() . '.' . $request->file->extension();
@@ -58,6 +62,7 @@ class TransaksiController extends Controller
 
         $validated = ([
             'pajak_id' => $request->pajak_id,
+            'kategori_pajak_id' => $request->kategori_pajak_id,
             'nama_usaha' => $request->nama_usaha,
             'jumlah_pendapatan' => $request->jumlah_pendapatan,
             'jumlah_pajak' => $request->jumlah_pajak,

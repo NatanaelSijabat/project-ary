@@ -1,20 +1,57 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import UserLayout from "@/Layouts/UserLayout";
 import { Head, useForm } from "@inertiajs/react";
 import Transaksi from "@/Components/Transaksi";
-import Modal from "@/Components/Modal";
-import { XMarkIcon } from "@heroicons/react/24/outline";
-import InputLabel from "@/Components/InputLabel";
 import InputError from "@/Components/InputError";
-import PrimaryButton from "@/Components/PrimaryButton";
-import Select from "@/Components/Select";
 import CurrencyFormat from "react-currency-format";
+import { FileInput, Label, Modal, Select, TextInput } from "flowbite-react";
+import PrimaryButton from "@/Components/PrimaryButton";
 
-export default function Index({ auth, transaksis, pajaks }) {
+export default function Index({ auth, transaksis, pajaks, kategoris }) {
     const [open, setOpen] = useState(false);
+    const [selectedImage, setSelectedImage] = useState();
 
-    const { data, setData, post, processing, reset, errors } = useForm({
+    const [jenis, setJenis] = useState([]);
+    const [jenisId, setJenisId] = useState("");
+    const [kategori, setKategori] = useState([]);
+    const [kategoriId, setKategoriId] = useState("");
+    // const [percent, setPercent] = useState();
+
+    useEffect(() => {
+        const getJenis = async () => {
+            const res = await fetch("http://localhost:8000/api/pajak");
+            const result = await res.json();
+            setJenis(await result);
+        };
+        getJenis();
+    }, []);
+
+    const handleJenis = (e) => {
+        const getJenisId = e.target.value;
+        setJenisId(getJenisId);
+        setData("pajak_id", getJenisId);
+    };
+
+    useEffect(() => {
+        const getKategori = async () => {
+            const res = await fetch(
+                `http://localhost:8000/api/kategori/${jenisId}`
+            );
+            const get = await res.json();
+            setKategori(await get);
+        };
+        getKategori();
+    }, [jenisId]);
+
+    const handleKategori = (e) => {
+        const getKategoriId = e.target.value;
+        setKategoriId(getKategoriId);
+        setData("kategori_pajak_id", getKategoriId);
+    };
+
+    const { data, setData, post, reset, errors, processing } = useForm({
         pajak_id: pajaks.id,
+        kategori_pajak_id: kategoris.id,
         nama_usaha: "",
         jumlah_pendapatan: "",
         jumlah_pajak: "",
@@ -23,10 +60,36 @@ export default function Index({ auth, transaksis, pajaks }) {
         file: null,
     });
 
+    const d = parseInt(data.jumlah_pendapatan.replaceAll(".", ""));
+    const total_pajak = d / 10;
+
+    const handleTotalPajak = () => {
+        setData("jumlah_pajak", total_pajak);
+    };
+
+    const imageChange = (e) => {
+        if (e.target.files && e.target.files.length > 0) {
+            setSelectedImage(e.target.files[0]);
+            setData("file", e.target.files[0]);
+        }
+    };
+
     const handleSubmit = (e) => {
         e.preventDefault();
         post(route("transaksi.store"), {
-            onSuccess: () => setOpen(false) + reset(),
+            onSuccess: () => {
+                setOpen(false);
+                reset(
+                    "pajak_id",
+                    "kategori_pajak_id",
+                    "nama_usaha",
+                    "jumlah_pendapatan",
+                    "jumlah_pajak",
+                    "tanggal_awal",
+                    "tanggal_akhir",
+                    "file"
+                );
+            },
         });
     };
 
@@ -36,7 +99,7 @@ export default function Index({ auth, transaksis, pajaks }) {
             errors={auth.errors}
             header={
                 <h2 className="text-xl font-semibold leading-tight text-gray-800">
-                    Transaksi Pajak Anda
+                    Transaksi Pajak Anda {jenisId}
                 </h2>
             }
         >
@@ -44,79 +107,60 @@ export default function Index({ auth, transaksis, pajaks }) {
 
             <h1 className="text-center ">AYO BAYAR PAJAK ANDA 🗿</h1>
 
-            <div className="px-16">
+            <div className="w-full ">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                    {/* modal */}
                     <div className="flex justify-end m-2 p-2">
                         <button
-                            onClick={() => setOpen(true)}
+                            onClick={() => {
+                                setOpen(true);
+                            }}
                             className="px-4 py-2 bg-indigo-500 hover:bg-indigo-600 text-white rounded"
                         >
                             Create
                         </button>
                     </div>
-                    <Modal show={open}>
-                        <div className="relative flex w-full items-center overflow-hidden bg-white px-4 pt-14 pb-8 shadow-2xl sm:px-6 sm:pt-8 md:p-6 lg:p-8">
-                            <button
-                                type="button"
-                                className="absolute top-4 right-4 text-gray-400 hover:text-gray-500 sm:top-8 sm:right-6 md:top-6 md:right-6 lg:top-8 lg:right-8"
-                                onClick={() => setOpen(false)}
-                            >
-                                <span className="sr-only">Close</span>
-                                <XMarkIcon
-                                    className="h-6 w-6"
-                                    aria-hidden="true"
-                                />
-                            </button>
-
+                    {/* modal */}
+                    <Modal
+                        show={open}
+                        size="7xl"
+                        popup={true}
+                        onClose={() => setOpen(false)}
+                        className="overflow-hidden"
+                    >
+                        <Modal.Header>Form Pembayaran Pajak</Modal.Header>
+                        <Modal.Body>
                             <div className="grid w-full grid-cols-1 items-start gap-y-8 gap-x-6 sm:grid-cols-12 lg:gap-x-8">
-                                <div className="aspect-w-2 aspect-h-3 overflow-hidden rounded-lg bg-gray-100 sm:col-span-4 lg:col-span-5"></div>
+                                {selectedImage && (
+                                    <div className="aspect-w-2 aspect-h-3 overflow-hidden rounded-lg bg-gray-100 sm:col-span-4 lg:col-span-5">
+                                        <img
+                                            alt="image"
+                                            src={URL.createObjectURL(
+                                                selectedImage
+                                            )}
+                                            width={100}
+                                        />
+                                    </div>
+                                )}
                                 <div className="sm:col-span-8 lg:col-span-7">
-                                    <h2 className="text-2-xl font-bold text-gray-900 sm:pr-12">
-                                        Form Pembayaran Pajak
-                                    </h2>
-                                    <section
-                                        aria-labelledby="information-heading"
-                                        className="mt-2"
+                                    <form
+                                        onSubmit={handleSubmit}
+                                        method="POST"
+                                        encType="multipart/form-data"
                                     >
-                                        <form
-                                            onSubmit={handleSubmit}
-                                            encType="multipart/form-data"
-                                            method="POST"
-                                        >
-                                            <InputLabel
-                                                forInput="jenis_pajak"
-                                                className="block text-sm font-medium text-gray-700"
-                                            >
-                                                Jenis Pajak
-                                            </InputLabel>
-                                            <InputError
-                                                message={errors.pajak_id}
-                                            />
-                                            <Select
-                                                name="jenis_pajak"
-                                                onChange={(e) =>
-                                                    setData(
-                                                        "pajak_id",
-                                                        e.target.value
-                                                    )
-                                                }
-                                                pajaks={pajaks}
-                                            />
-
-                                            <InputLabel
-                                                forInput="nama_usaha"
-                                                className="block text-sm font-medium text-gray-700"
-                                            >
-                                                Nama Usaha Anda
-                                            </InputLabel>
-                                            <InputError
-                                                message={errors.nama_usaha}
-                                            />
-                                            <input
-                                                name="nama_usaha"
+                                        <div>
+                                            <div className="block">
+                                                <Label
+                                                    htmlFor="nama_usaha"
+                                                    value="Nama Usaha"
+                                                />
+                                                <InputError
+                                                    message={errors.nama_usaha}
+                                                    className="text-xs"
+                                                />
+                                            </div>
+                                            <TextInput
+                                                id="nama_usaha"
                                                 type="text"
-                                                className="block mb-2 w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                                                 value={data.nama_usaha}
                                                 onChange={(e) =>
                                                     setData(
@@ -126,17 +170,96 @@ export default function Index({ auth, transaksis, pajaks }) {
                                                 }
                                                 autoComplete="off"
                                             />
-                                            <InputLabel
-                                                forInput="jumlah_pendapatan"
-                                                className="block text-sm font-medium text-gray-700"
+                                        </div>
+                                        <div>
+                                            <div className="block">
+                                                <Label
+                                                    htmlFor="jenis_pajak"
+                                                    value="Jenis Pajak"
+                                                />
+                                                <InputError
+                                                    message={errors.pajak_id}
+                                                    className="text-xs"
+                                                />
+                                            </div>
+                                            <Select
+                                                name="jenis"
+                                                onChange={(e) => handleJenis(e)}
                                             >
-                                                Jumlah Pendapatan Anda
-                                            </InputLabel>
-                                            <InputError
-                                                message={
-                                                    errors.jumlah_pendapatan
+                                                <option
+                                                    value=""
+                                                    selected
+                                                    disabled
+                                                    hidden
+                                                >
+                                                    -- Jenis Pajak --
+                                                </option>
+                                                {jenis.data?.map((d) => (
+                                                    <option
+                                                        key={d.id}
+                                                        value={d.id}
+                                                    >
+                                                        {d.nama}
+                                                    </option>
+                                                ))}
+                                            </Select>
+                                        </div>
+                                        <div>
+                                            <div className="block">
+                                                <Label
+                                                    htmlFor="kategori_pajak_id"
+                                                    value="Kategori Pajak"
+                                                />
+                                                <InputError
+                                                    message={
+                                                        errors.kategori_pajak_id
+                                                    }
+                                                    className="text-xs"
+                                                />
+                                            </div>
+                                            <Select
+                                                name="kategori"
+                                                onChange={(e) =>
+                                                    handleKategori(e)
                                                 }
-                                            />
+                                            >
+                                                <option
+                                                    value=""
+                                                    selected
+                                                    disabled
+                                                    hidden
+                                                >
+                                                    -- Kategori Pajak --
+                                                </option>
+                                                {jenisId ? (
+                                                    kategori.data?.map((k) => (
+                                                        <option
+                                                            key={k.id}
+                                                            value={k.id}
+                                                        >
+                                                            {k.nama}
+                                                        </option>
+                                                    ))
+                                                ) : (
+                                                    <option disabled>
+                                                        No Data Kategori
+                                                    </option>
+                                                )}
+                                            </Select>
+                                        </div>
+                                        <div>
+                                            <div className="block">
+                                                <Label
+                                                    htmlFor="jumlah_pendapatan"
+                                                    value="Jumlah Pendapatan"
+                                                />
+                                                <InputError
+                                                    message={
+                                                        errors.jumlah_pendapatan
+                                                    }
+                                                    className="text-xs"
+                                                />
+                                            </div>
                                             <div className="relative rounded-md shadow-sm ">
                                                 <div className="pointer-event-none absolute inset-y-0 left-0 flex items-center pl-2 ">
                                                     <span className="text-gray-500 sm:text-sm">
@@ -147,6 +270,7 @@ export default function Index({ auth, transaksis, pajaks }) {
                                                     className="block w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm mb-2 pl-8 pr-12"
                                                     thousandSeparator={"."}
                                                     decimalSeparator={","}
+                                                    name="jumlah_pendapatan"
                                                     value={
                                                         data.jumlah_pendapatan
                                                     }
@@ -156,45 +280,64 @@ export default function Index({ auth, transaksis, pajaks }) {
                                                             e.target.value
                                                         )
                                                     }
+                                                    autoComplete="off"
                                                 />
                                             </div>
-                                            <InputLabel
-                                                forInput="jumlah_pajak"
-                                                className="block text-sm font-medium text-gray-700"
-                                            >
-                                                Jumlah Pajak Anda
-                                            </InputLabel>
-                                            <InputError
-                                                message={errors.jumlah_pajak}
-                                            />
+                                        </div>
+                                        <div>
+                                            <div className="block">
+                                                <Label
+                                                    htmlFor="jumlah_pajak"
+                                                    value="Jumlah Pajak"
+                                                />
+                                                <InputError
+                                                    message={
+                                                        errors.jumlah_pajak
+                                                    }
+                                                    className="text-xs"
+                                                />
+                                            </div>
                                             <div className="relative rounded-md shadow-sm ">
-                                                <div className="pointer-event-none absolute inset-y-0 left-0 flex items-center pl-2 ">
-                                                    <span className="text-gray-500 sm:text-sm">
-                                                        Rp
-                                                    </span>
-                                                </div>
-                                                <CurrencyFormat
-                                                    className="block w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm mb-2 pl-8 pr-12"
-                                                    thousandSeparator={"."}
-                                                    decimalSeparator={","}
-                                                    value={data.jumlah_pajak}
-                                                    onChange={(e) =>
-                                                        setData(
-                                                            "jumlah_pajak",
-                                                            e.target.value
-                                                        )
+                                                {jenisId && (
+                                                    <>
+                                                        <div className="pointer-event-none absolute inset-y-0 left-0 flex items-center pl-2 ">
+                                                            <span className="text-gray-500 sm:text-sm">
+                                                                Rp
+                                                            </span>
+                                                        </div>
+                                                        <CurrencyFormat
+                                                            className="block w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm mb-2 pl-8 pr-12"
+                                                            thousandSeparator={
+                                                                "."
+                                                            }
+                                                            decimalSeparator={
+                                                                ","
+                                                            }
+                                                            value={
+                                                                data.jumlah_pajak
+                                                            }
+                                                            onChange={(e) =>
+                                                                handleTotalPajak(
+                                                                    e
+                                                                )
+                                                            }
+                                                        />
+                                                    </>
+                                                )}
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <div className="block">
+                                                <Label
+                                                    htmlFor="tanggal_awal"
+                                                    value="Tanggal Awal"
+                                                />
+                                                <InputError
+                                                    message={
+                                                        errors.tanggal_awal
                                                     }
                                                 />
                                             </div>
-                                            <InputLabel
-                                                forInput="tanggal_awal"
-                                                className="block text-sm font-medium text-gray-700"
-                                            >
-                                                Tanggal Awal
-                                            </InputLabel>
-                                            <InputError
-                                                message={errors.tanggal_awal}
-                                            />
                                             <input
                                                 name="tanggal_awal"
                                                 type="date"
@@ -207,15 +350,19 @@ export default function Index({ auth, transaksis, pajaks }) {
                                                     )
                                                 }
                                             />
-                                            <InputLabel
-                                                forInput="tanggal_akhir"
-                                                className="block text-sm font-medium text-gray-700"
-                                            >
-                                                Tanggal Akhir
-                                            </InputLabel>
-                                            <InputError
-                                                message={errors.tanggal_akhir}
-                                            />
+                                        </div>
+                                        <div>
+                                            <div className="block">
+                                                <Label
+                                                    htmlFor="tanggal_akhir"
+                                                    value="Tanggal Akhir"
+                                                />
+                                                <InputError
+                                                    message={
+                                                        errors.tanggal_akhir
+                                                    }
+                                                />
+                                            </div>
                                             <input
                                                 name="tanggal_akhir"
                                                 type="date"
@@ -228,35 +375,38 @@ export default function Index({ auth, transaksis, pajaks }) {
                                                     )
                                                 }
                                             />
-
-                                            <InputLabel
-                                                forInput="file"
-                                                className="block text-sm font-medium text-gray-700"
-                                            >
-                                                File
-                                            </InputLabel>
-                                            <InputError message={errors.file} />
+                                        </div>
+                                        <div>
+                                            <div className="block">
+                                                <Label
+                                                    htmlFor="file"
+                                                    value="Upload File"
+                                                />
+                                                <InputError
+                                                    message={errors.file}
+                                                />
+                                            </div>
                                             <input
                                                 name="file"
                                                 type="file"
+                                                accept="image/*"
                                                 className="block w-full sm:text-sm mb-2"
-                                                onChange={(e) =>
-                                                    setData(
-                                                        "file",
-                                                        e.target.files[0]
-                                                    )
-                                                }
+                                                onChange={(e) => imageChange(e)}
                                             />
-                                            <PrimaryButton
-                                                processing={processing}
-                                            >
-                                                Simpan
-                                            </PrimaryButton>
-                                        </form>
-                                    </section>
+                                            {/* <FileInput
+                                                name="file"
+                                                type="file"
+                                                accept="image/*"
+                                                onChange={(e) => imageChange(e)}
+                                            /> */}
+                                        </div>
+                                        <PrimaryButton processing={processing}>
+                                            Simpan
+                                        </PrimaryButton>
+                                    </form>
                                 </div>
                             </div>
-                        </div>
+                        </Modal.Body>
                     </Modal>
                     {/* end modal */}
 

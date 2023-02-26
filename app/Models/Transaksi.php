@@ -14,7 +14,7 @@ class Transaksi extends Model
     // protected $id = 'slug';
 
     protected $fillable = [
-        'pajak_id', 'nama_usaha', 'jumlah_pendapatan', 'jumlah_pajak', 'tanggal_awal', 'tanggal_akhir', 'file', 'isCheck'
+        'pajak_id', 'kategori_pajak_id', 'nama_usaha', 'jumlah_pendapatan', 'jumlah_pajak', 'tanggal_awal', 'tanggal_akhir', 'file', 'isCheck'
     ];
 
     protected function name(): Attribute

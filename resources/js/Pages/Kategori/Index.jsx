@@ -2,7 +2,7 @@ import KategoriPajak from "@/Components/KategoriPajak";
 import Authenticated from "@/Layouts/AuthenticatedLayout";
 import { Head, useForm, usePage } from "@inertiajs/react";
 import { Button, Label, Modal, Table, TextInput } from "flowbite-react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Pagination from "@/Components/Pagination";
 import PrimaryButton from "@/Components/PrimaryButton";
 import Select from "@/Components/Select";
@@ -17,12 +17,21 @@ export default function Index({ auth, kategoris, pajaks }) {
         percent: "",
     });
 
+    useEffect(() => {
+        setData(data);
+        reset();
+    }, []);
+
     const handleSubmit = (e) => {
         e.preventDefault();
         post(route("kategori.store"), {
-            onSuccess: () => setOpen(false) + reset(),
+            preserveScroll: true,
+            onSuccess: () => {
+                setOpen(false);
+            },
         });
     };
+
     return (
         <Authenticated
             auth={auth}
@@ -64,6 +73,7 @@ export default function Index({ auth, kategoris, pajaks }) {
                                         }
                                         pajaks={pajaks}
                                     />
+                                    <InputError message={errors.pajak_id} />
                                 </div>
                             </div>
                             <div>

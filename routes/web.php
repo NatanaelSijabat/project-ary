@@ -26,7 +26,6 @@ use Inertia\Inertia;
 Route::get('/', function () {
     return Inertia::render('Auth/Login');
 });
-// Route::inertia('/dashboard', 'Dashboard')->name('dashboard');
 
 Route::group(['middleware' => 'auth'], function () {
     Route::get('/redirectAuthenticatedUsers', [RedirectAuthenticatedUsersController::class, 'home']);

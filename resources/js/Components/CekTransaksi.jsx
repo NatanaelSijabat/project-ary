@@ -2,6 +2,7 @@ import React from "react";
 import moment from "moment";
 import PrimaryButton from "./PrimaryButton";
 import { useForm } from "@inertiajs/react";
+import { Table } from "flowbite-react";
 
 export default function CekTransaksi({ transaksi }) {
     const status = (result) => {
@@ -39,28 +40,33 @@ export default function CekTransaksi({ transaksi }) {
 
     return (
         <>
-            <td className="px-6 py-6 whitespace-nowrap">
+            <Table.Cell className="px-6 py-6 whitespace-nowrap">
                 {transaksi.user.name}
-            </td>
-            <td className="px-6 py-6 whitespace-nowrap">
+            </Table.Cell>
+            <Table.Cell className="px-6 py-6 whitespace-nowrap">
                 {transaksi.nama_usaha}
-            </td>
-            <td className="px-6 py-6 whitespace-nowrap">
+            </Table.Cell>
+            <Table.Cell className="px-6 py-6 whitespace-nowrap">
                 {transaksi.pajak.nama}
-            </td>
-            <td className="px-6 py-6 whitespace-nowrap">
+            </Table.Cell>
+            <Table.Cell className="px-6 py-6 whitespace-nowrap">
+                Kategori Pajak
+            </Table.Cell>
+            <Table.Cell className="px-6 py-6 whitespace-nowrap">
                 {moment(transaksi.tanggal_awal).format("D MMMM YYYY")}
-            </td>
-            <td className="px-6 py-6 whitespace-nowrap">
+            </Table.Cell>
+            <Table.Cell className="px-6 py-6 whitespace-nowrap">
                 {moment(transaksi.tanggal_akhir).format("D MMMM YYYY")}
-            </td>
-            <td className="px-6 py-6 whitespace-nowrap">{status()}</td>
-            <td className="p-6 whitespace-nowrap">
+            </Table.Cell>
+            <Table.Cell className="px-6 py-6 whitespace-nowrap">
+                {status()}
+            </Table.Cell>
+            <Table.Cell className="p-6 whitespace-nowrap">
                 <button className="p-4">view</button>
                 <form method="POST" onSubmit={submit}>
                     {action()}
                 </form>
-            </td>
+            </Table.Cell>
         </>
     );
 }

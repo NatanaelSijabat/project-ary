@@ -133,10 +133,16 @@ export default function UserLayout({ auth, header, children }) {
                 >
                     <div className="pt-2 pb-3 space-y-1">
                         <ResponsiveNavLink
-                            href={route("dashboard")}
-                            active={route().current("dashboard")}
+                            href={route("userDashboard")}
+                            active={route().current("userDashboard")}
                         >
                             Dashboard
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink
+                            href={route("transaksi.index")}
+                            active={route().current("transaksi.index")}
+                        >
+                            Transaksi
                         </ResponsiveNavLink>
                     </div>
 

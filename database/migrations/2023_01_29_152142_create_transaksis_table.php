@@ -15,8 +15,9 @@ return new class extends Migration
     {
         Schema::create('transaksis', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained();
-            $table->foreignId('pajak_id')->constrained();
+            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('pajak_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('kategori_pajak_id')->constrained()->cascadeOnDelete();
             $table->string('nama_usaha');
             $table->string('jumlah_pendapatan');
             $table->string('jumlah_pajak');

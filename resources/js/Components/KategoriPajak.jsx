@@ -1,6 +1,6 @@
 import { useForm, usePage } from "@inertiajs/react";
 import { Modal, Table, Button, Label, TextInput } from "flowbite-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FiEdit } from "react-icons/fi";
 import { MdDeleteForever } from "react-icons/md";
 import DangerButton from "./DangerButton";
@@ -28,12 +28,17 @@ export default function KategoriPajak({ kategori }) {
         percent: kategori.percent,
     });
 
+    useEffect(() => {
+        setData(data);
+        reset();
+    }, []);
+
     const onEdit = (e) => {
         e.preventDefault();
         patch(route("kategori.update", kategori.id), {
+            method: "put",
             onSuccess: () => {
                 setOpenEdit(false);
-                reset();
             },
         });
     };
@@ -44,6 +49,7 @@ export default function KategoriPajak({ kategori }) {
             onSuccess: () => setOpenDelete(false),
         });
     };
+
     return (
         <>
             <Table.Cell>{kategori.pajak.nama}</Table.Cell>
@@ -118,6 +124,7 @@ export default function KategoriPajak({ kategori }) {
                                             type="number"
                                             autoComplete="off"
                                         />
+                                        <InputError message={errors.percent} />
                                     </div>
                                 </div>
                                 <div className="flex flex-wrap justify-end gap-2">
@@ -163,7 +170,7 @@ export default function KategoriPajak({ kategori }) {
                                 <DangerButton>Yes, I'm Sure</DangerButton>
                                 <Button
                                     color="gray"
-                                    onClick={() => setOpen(false)}
+                                    onClick={() => setOpenDelete(false)}
                                 >
                                     No, cancel
                                 </Button>
