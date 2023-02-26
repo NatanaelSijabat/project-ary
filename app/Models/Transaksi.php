@@ -33,4 +33,9 @@ class Transaksi extends Model
     {
         return $this->belongsTo(Pajak::class);
     }
+
+    public function kategori_pajak()
+    {
+        return $this->belongsTo(KategoriPajak::class);
+    }
 }

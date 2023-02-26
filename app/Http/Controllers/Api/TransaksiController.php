@@ -18,11 +18,16 @@ class TransaksiController extends BaseController
 
     public function show($user_id)
     {
+        // $npwpd = Transaksi::with('user:id,')
         $data = Transaksi::where('user_id', $user_id)->get();
 
-        if (is_null($data)) {
-            return $this->sendError("Data Not Found");
-        }
-        return new TransaksiResource(true, "list Transaksi", $data);
+        return $this->sendResponse(TransaksiResource::collection($data), 'Data Transaksi');
     }
+
+    // public function search($npwpd)
+    // {
+    //     $search = Transaksi::with('user:id,npwpd')->where('user:id,npwpd', $npwpd)->get();
+
+    //     return $this->sendResponse(TransaksiResource::collection($search), 'Data Kategori');
+    // }
 }

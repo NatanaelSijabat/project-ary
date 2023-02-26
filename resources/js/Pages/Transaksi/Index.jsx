@@ -99,7 +99,7 @@ export default function Index({ auth, transaksis, pajaks, kategoris }) {
             errors={auth.errors}
             header={
                 <h2 className="text-xl font-semibold leading-tight text-gray-800">
-                    Transaksi Pajak Anda {jenisId}
+                    Transaksi Pajak Anda
                 </h2>
             }
         >

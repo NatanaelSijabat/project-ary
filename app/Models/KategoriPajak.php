@@ -20,4 +20,9 @@ class KategoriPajak extends Model
     {
         return $this->belongsTo(Pajak::class);
     }
+
+    public function transaksi()
+    {
+        return $this->hasMany(Transaksi::class);
+    }
 }

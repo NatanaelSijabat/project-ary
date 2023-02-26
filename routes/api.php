@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\KategoriController;
 use App\Http\Controllers\Api\PajakController;
 use App\Http\Controllers\Api\TransaksiController;
+use App\Http\Controllers\TransaksiController as ControllersTransaksiController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -21,5 +22,6 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 Route::apiResource('/transaksi', TransaksiController::class);
+// Route::get('/transaksi/{search}', [ControllersTransaksiController::class, 'Api\KategoriController@search']);
 Route::apiResource('/kategori', KategoriController::class);
 Route::apiResource('/pajak', PajakController::class);

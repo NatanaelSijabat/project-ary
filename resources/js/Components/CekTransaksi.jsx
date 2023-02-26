@@ -3,6 +3,7 @@ import moment from "moment";
 import PrimaryButton from "./PrimaryButton";
 import { useForm } from "@inertiajs/react";
 import { Table } from "flowbite-react";
+import { HiOutlineDownload } from "react-icons/hi";
 
 export default function CekTransaksi({ transaksi }) {
     const status = (result) => {
@@ -50,7 +51,7 @@ export default function CekTransaksi({ transaksi }) {
                 {transaksi.pajak.nama}
             </Table.Cell>
             <Table.Cell className="px-6 py-6 whitespace-nowrap">
-                Kategori Pajak
+                {transaksi.kategori_pajak.nama}
             </Table.Cell>
             <Table.Cell className="px-6 py-6 whitespace-nowrap">
                 {moment(transaksi.tanggal_awal).format("D MMMM YYYY")}
@@ -62,10 +63,17 @@ export default function CekTransaksi({ transaksi }) {
                 {status()}
             </Table.Cell>
             <Table.Cell className="p-6 whitespace-nowrap">
-                <button className="p-4">view</button>
-                <form method="POST" onSubmit={submit}>
-                    {action()}
-                </form>
+                <div className="flex">
+                    <a
+                        className="p-4 hover:cursor-pointer"
+                        href={"cek/pdf/" + transaksi.id}
+                    >
+                        <HiOutlineDownload className="text-2xl" />
+                    </a>
+                    <form method="POST" onSubmit={submit}>
+                        {action()}
+                    </form>
+                </div>
             </Table.Cell>
         </>
     );

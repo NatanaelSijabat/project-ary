@@ -17,7 +17,7 @@ class CheckTransaksiController extends Controller
     public function index()
     {
         return Inertia::render('CekTransaksi/Index', [
-            'transaksis' => Transaksi::with('user:id,name', 'pajak:id,nama')->latest()->get()
+            'transaksis' => Transaksi::with('user:id,name', 'pajak:id,nama', 'kategori_pajak:id,nama')->latest()->get()
         ]);
     }
 
