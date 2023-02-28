@@ -17,10 +17,17 @@ class KategoriController extends BaseController
         return $this->sendResponse(KategoriResource::collection($kategori), 'Data Kategori');
     }
 
-    public function show($pajak_id)
+    public function show($id)
+    {
+        $kategori = KategoriPajak::where('id', $id)->get();
+
+        return $this->sendResponse(KategoriResource::collection($kategori), 'Data Kategori By Id');
+    }
+
+    public function pajak($pajak_id)
     {
         $kategori = KategoriPajak::where('pajak_id', $pajak_id)->get();
 
-        return $this->sendResponse(KategoriResource::collection($kategori), 'Data Kategori');
+        return $this->sendResponse(KategoriResource::collection($kategori), 'Data Kategori By Pajak');
     }
 }

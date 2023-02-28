@@ -15,7 +15,8 @@ export default function Index({ auth, transaksis, pajaks, kategoris }) {
     const [jenisId, setJenisId] = useState("");
     const [kategori, setKategori] = useState([]);
     const [kategoriId, setKategoriId] = useState("");
-    // const [percent, setPercent] = useState();
+    const [percent, setPercent] = useState("");
+    const [totalPajak, setTotalPajak] = useState("");
 
     useEffect(() => {
         const getJenis = async () => {
@@ -33,14 +34,14 @@ export default function Index({ auth, transaksis, pajaks, kategoris }) {
     };
 
     useEffect(() => {
-        const getKategori = async () => {
+        const getKategoriByPajak = async () => {
             const res = await fetch(
-                `http://localhost:8000/api/kategori/${jenisId}`
+                `http://localhost:8000/api/kategori/pajak/${jenisId}`
             );
             const get = await res.json();
             setKategori(await get);
         };
-        getKategori();
+        getKategoriByPajak();
     }, [jenisId]);
 
     const handleKategori = (e) => {
@@ -60,10 +61,22 @@ export default function Index({ auth, transaksis, pajaks, kategoris }) {
         file: null,
     });
 
-    const d = parseInt(data.jumlah_pendapatan.replaceAll(".", ""));
-    const total_pajak = d / 10;
+    useEffect(() => {
+        const getKategoriById = async () => {
+            const res = await fetch(
+                `http://localhost:8000/api/kategori/${kategoriId}`
+            );
+            const get = await res.json();
+            setPercent(await get);
+        };
+        getKategoriById();
+    }, [kategoriId]);
 
-    const handleTotalPajak = () => {
+    const handlePercent = () => {
+        const persen = percent.data?.map((e) => e.percent);
+        const d = parseInt(data.jumlah_pendapatan.replaceAll(".", ""));
+        const total_pajak = (d * persen) / 100;
+        setTotalPajak(total_pajak);
         setData("jumlah_pajak", total_pajak);
     };
 
@@ -313,13 +326,9 @@ export default function Index({ auth, transaksis, pajaks, kategoris }) {
                                                             decimalSeparator={
                                                                 ","
                                                             }
-                                                            value={
-                                                                data.jumlah_pajak
-                                                            }
+                                                            value={totalPajak}
                                                             onChange={(e) =>
-                                                                handleTotalPajak(
-                                                                    e
-                                                                )
+                                                                handlePercent(e)
                                                             }
                                                         />
                                                     </>

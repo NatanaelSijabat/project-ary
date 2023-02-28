@@ -1,5 +1,6 @@
 import React from "react";
 import moment from "moment/moment";
+import { HiOutlineDownload } from "react-icons/hi";
 
 export default function Transaksi({ transaksi }) {
     const status = (result) => {
@@ -19,6 +20,12 @@ export default function Transaksi({ transaksi }) {
         return result;
     };
 
+    const rupiah = (number) => {
+        return new Intl.NumberFormat("id-ID", {
+            style: "currency",
+            currency: "IDR",
+        }).format(number);
+    };
     return (
         <>
             <td className="px-6 py-6 whitespace-nowrap">
@@ -28,10 +35,10 @@ export default function Transaksi({ transaksi }) {
                 {transaksi.nama_usaha}
             </td>
             <td className="px-6 py-6 whitespace-nowrap">
-                {transaksi.jumlah_pendapatan}
+                {rupiah(transaksi.jumlah_pendapatan)}
             </td>
             <td className="px-6 py-6 whitespace-nowrap">
-                {transaksi.jumlah_pajak}
+                {rupiah(transaksi.jumlah_pajak)}
             </td>
             <td className="px-6 py-6 whitespace-nowrap">
                 {moment(transaksi.tanggal_awal).format("D MMMM YYYY")}
@@ -47,8 +54,10 @@ export default function Transaksi({ transaksi }) {
                     {status()}
                 </span>
             </td>
-            <td>
-                <a href={"transaksi/pdf/" + transaksi.id}>Download</a>
+            <td className="px-6 py-6 whitespace-nowrap">
+                <a href={"transaksi/pdf/" + transaksi.id}>
+                    <HiOutlineDownload className="text-2xl" />
+                </a>
             </td>
         </>
     );

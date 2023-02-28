@@ -100,7 +100,7 @@ export default function Login({ status, canResetPassword }) {
                             Forgot your password?
                         </Link>
                     )} */}
-                    <Link href={route("register")}> Register</Link>
+                    {/* <Link href={route("register")}> Register</Link> */}
                     <PrimaryButton className="ml-4" processing={processing}>
                         Log in
                     </PrimaryButton>

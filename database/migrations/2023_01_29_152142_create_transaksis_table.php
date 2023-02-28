@@ -19,8 +19,8 @@ return new class extends Migration
             $table->foreignId('pajak_id')->constrained()->cascadeOnDelete();
             $table->foreignId('kategori_pajak_id')->constrained()->cascadeOnDelete();
             $table->string('nama_usaha');
-            $table->string('jumlah_pendapatan');
-            $table->string('jumlah_pajak');
+            $table->bigInteger('jumlah_pendapatan');
+            $table->bigInteger('jumlah_pajak');
             $table->date('tanggal_awal');
             $table->date('tanggal_akhir');
             $table->string('file');

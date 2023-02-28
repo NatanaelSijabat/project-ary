@@ -42,7 +42,7 @@ export default function CekTransaksi({ transaksi }) {
     return (
         <>
             <Table.Cell className="px-6 py-6 whitespace-nowrap">
-                {transaksi.npwpd}
+                {transaksi.name}
             </Table.Cell>
             <Table.Cell className="px-6 py-6 whitespace-nowrap">
                 {transaksi.nama_usaha}
