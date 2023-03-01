@@ -17,6 +17,7 @@ export default function Index({ auth, transaksis, pajaks, kategoris }) {
     const [kategoriId, setKategoriId] = useState("");
     const [percent, setPercent] = useState("");
     const [totalPajak, setTotalPajak] = useState("");
+    const [pendapatan, setPendapatan] = useState("");
 
     useEffect(() => {
         const getJenis = async () => {
@@ -72,9 +73,16 @@ export default function Index({ auth, transaksis, pajaks, kategoris }) {
         getKategoriById();
     }, [kategoriId]);
 
+    const handlePendapatan = (e) => {
+        const pendapatan = parseInt(e.target.value.replaceAll(".", ""));
+        console.log(pendapatan);
+        setPendapatan(pendapatan);
+        setData("jumlah_pendapatan", pendapatan);
+    };
+
     const handlePercent = () => {
         const persen = percent.data?.map((e) => e.percent);
-        const d = parseInt(data.jumlah_pendapatan.replaceAll(".", ""));
+        const d = parseInt(pendapatan);
         const total_pajak = (d * persen) / 100;
         setTotalPajak(total_pajak);
         setData("jumlah_pajak", total_pajak);
@@ -284,14 +292,9 @@ export default function Index({ auth, transaksis, pajaks, kategoris }) {
                                                     thousandSeparator={"."}
                                                     decimalSeparator={","}
                                                     name="jumlah_pendapatan"
-                                                    value={
-                                                        data.jumlah_pendapatan
-                                                    }
+                                                    value={pendapatan}
                                                     onChange={(e) =>
-                                                        setData(
-                                                            "jumlah_pendapatan",
-                                                            e.target.value
-                                                        )
+                                                        handlePendapatan(e)
                                                     }
                                                     autoComplete="off"
                                                 />
