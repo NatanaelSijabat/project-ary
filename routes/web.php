@@ -35,7 +35,7 @@ Route::group(['middleware' => 'auth'], function () {
             ->only('index')
             ->middleware('auth', 'verified');
         Route::resource('/cek', CheckTransaksiController::class)
-            ->only('index', 'update')
+            ->only('index', 'update', 'destroy')
             ->middleware('auth', 'verified');
         Route::resource('/pajak', PajakController::class)
             ->only('index', 'store', 'update', 'destroy')

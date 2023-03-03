@@ -143,7 +143,7 @@ export default function Index({ auth, transaksis, pajaks, kategoris }) {
                     {/* modal */}
                     <Modal
                         show={open}
-                        size="7xl"
+                        size="5xl"
                         popup={true}
                         onClose={() => setOpen(false)}
                         className="overflow-hidden"
@@ -422,8 +422,8 @@ export default function Index({ auth, transaksis, pajaks, kategoris }) {
                     </Modal>
                     {/* end modal */}
 
-                    <div className="flex flex-col">
-                        <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+                    <div className="flex flex-col w-100 h-100 relative overflow-hidden">
+                        <div className="-my-2  overflow-x-auto sm:-mx-6 lg:-mx-8">
                             <div className="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
                                 <h2>Record Pembayaran Anda : </h2>
                                 <br />

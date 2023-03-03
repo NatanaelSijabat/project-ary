@@ -4,11 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\Transaksi;
 use App\Models\User;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
-use Illuminate\Database\Query\JoinClause;
 use Illuminate\Support\Facades\DB;
-
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
 
 class CheckTransaksiController extends Controller
 {
@@ -97,8 +98,13 @@ class CheckTransaksiController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy($id): RedirectResponse
     {
-        //
+        $data = Transaksi::findOrFail($id);
+        $imagePath = public_path() . '/storage/images/' . $data->file;
+        unlink($imagePath);
+        $data->delete();
+
+        return redirect(route('cek.index'));
     }
 }
