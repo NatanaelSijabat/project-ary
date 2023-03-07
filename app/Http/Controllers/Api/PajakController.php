@@ -15,4 +15,11 @@ class PajakController extends BaseController
 
         return $this->sendResponse(PajakResource::collection($pajak), 'Data Pajak');
     }
+
+    public function show($id)
+    {
+        $pajak = Pajak::where('id', $id)->get();
+
+        return $this->sendResponse(PajakResource::collection($pajak), 'Data Pajak By Id');
+    }
 }

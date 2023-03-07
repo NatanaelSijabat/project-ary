@@ -1,31 +1,50 @@
 {
-    "private": true,
+    "name": "projectary",
+    "version": "1.0.0",
+    "description": "<p align=\"center\">     Make With ❤️ </p>",
+    "main": "postcss.config.js",
+    "directories": {
+        "test": "tests"
+    },
     "scripts": {
         "dev": "vite",
         "build": "vite build"
     },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/NatanaelSijabat/project-ary.git"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/NatanaelSijabat/project-ary/issues"
+    },
+    "homepage": "https://github.com/NatanaelSijabat/project-ary#readme",
     "devDependencies": {
-        "@headlessui/react": "^1.7.11",
-        "@inertiajs/react": "^1.0.0",
+        "@headlessui/react": "^1.7.13",
+        "@inertiajs/react": "^1.0.2",
         "@tailwindcss/forms": "^0.5.3",
-        "@vitejs/plugin-react": "^3.0.0",
+        "@types/react-currency-format": "^1.0.0",
+        "@vitejs/plugin-react": "^3.1.0",
         "autoprefixer": "^10.4.13",
-        "core-js": "^3.28.0",
-        "flowbite": "^1.6.3",
-        "flowbite-react": "^0.3.8",
-        "laravel-vite-plugin": "^0.7.2",
-        "lodash": "^4.17.19",
-        "moment": "^2.29.4",
+        "core-js": "^3.29.0",
+        "lodash": "^4.17.21",
         "postcss": "^8.4.21",
-        "react": "^18.2.0",
-        "react-currency-format": "^1.1.0",
-        "react-dom": "^18.2.0",
-        "react-icons": "^4.7.1",
-        "react-router-dom": "^6.8.1",
+        "react-currency-format": "github:mohitgupta8888/react-currency-format#4f365ec5005e23451a3b95da1a209b0025622b8d",
         "tailwindcss": "^3.2.7",
-        "vite": "^4.0.0"
+        "vite": "^4.1.4"
     },
     "dependencies": {
-        "@heroicons/react": "^2.0.16"
+        "@heroicons/react": "^2.0.16",
+        "@types/react": "^18.0.28",
+        "flowbite": "^1.6.3",
+        "flowbite-react": "^0.3.8",
+        "laravel-vite-plugin": "^0.7.4",
+        "moment": "^2.29.4",
+        "react": "^18.2.0",
+        "react-dom": "^18.2.0",
+        "react-icons": "^4.8.0",
+        "react-router-dom": "^6.8.2"
     }
 }

@@ -49,9 +49,10 @@ Route::group(['middleware' => 'auth'], function () {
     Route::group(['middleware' => 'checkRole:user'], function () {
         Route::inertia('/userDashboard', 'UserDashboard')->name('userDashboard');
         Route::resource('/transaksi', TransaksiController::class)
-            ->only('index', 'store')
+            ->only('index', 'store', 'update', 'destroy')
             ->middleware('auth', 'verified');
         Route::get('/transaksi/pdf/{id}', [PdfController::class, 'generatePDF'])->name('pdf');
+        Route::post('/transaksi/upload', [TransaksiController::class, 'uploadFile'])->name('transaksi.upload');
     });
 });
 

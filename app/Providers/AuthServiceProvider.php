@@ -19,7 +19,7 @@ class AuthServiceProvider extends ServiceProvider
      */
     protected $policies = [
         KategoriPajak::class => KategoriPolicy::class,
-        // Transaksi::class => TransaksiPolicy::class
+        Transaksi::class => TransaksiPolicy::class
     ];
 
     /**

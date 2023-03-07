@@ -9,6 +9,7 @@ use Inertia\Inertia;
 use App\Models\Pajak;
 use Illuminate\Support\Facades\Validator;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Http\RedirectResponse;
 
 class TransaksiController extends Controller
 {
@@ -19,7 +20,7 @@ class TransaksiController extends Controller
      */
     public function index(Request $request)
     {
-        $transaksis  = Transaksi::with('user:id,name', 'pajak:id,nama')->latest()->get();
+        $transaksis  = Transaksi::with('user:id,name', 'pajak:id,nama', 'kategori_pajak:id,nama')->latest()->get();
         $pajaks = Pajak::all();
         $kategoris = KategoriPajak::all();
 
@@ -54,11 +55,10 @@ class TransaksiController extends Controller
             'jumlah_pajak' => ['required'],
             'tanggal_awal' => ['required'],
             'tanggal_akhir' => ['required'],
-            'file' => ['required'],
         ])->validate();
 
-        $fileName = time() . '.' . $request->file->extension();
-        $request->file->move(public_path('storage/images'), $fileName);
+        // $fileName = time() . '.' . $request->file->extension();
+        // $request->file->move(public_path('storage/images'), $fileName);
 
         $validated = ([
             'pajak_id' => $request->pajak_id,
@@ -68,7 +68,6 @@ class TransaksiController extends Controller
             'jumlah_pajak' => $request->jumlah_pajak,
             'tanggal_awal' => $request->tanggal_awal,
             'tanggal_akhir' => $request->tanggal_akhir,
-            'file' => $fileName
         ]);
 
         $request->user()->transaksi()->create($validated);
@@ -105,9 +104,26 @@ class TransaksiController extends Controller
      * @param  \App\Models\Transaksi  $transaksi
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Transaksi $transaksi)
+    public function update(Request $request, Transaksi $transaksi): RedirectResponse
     {
-        //
+        $this->authorize('update', $transaksi);
+
+        $validated = $request->validate([
+            'pajak_id' => 'required',
+            'kategori_pajak_id' => 'required',
+            'nama_usaha' => 'required|string',
+            'jumlah_pendapatan' => 'required',
+            'jumlah_pajak' => 'required',
+            'tanggal_awal' => 'required',
+            'tanggal_akhir' => 'required',
+            'file' => 'required'
+        ]);
+
+        // dd($validated);
+
+        $transaksi->update($validated);
+
+        return redirect(route('transaksi.index'));
     }
 
     /**
@@ -116,8 +132,36 @@ class TransaksiController extends Controller
      * @param  \App\Models\Transaksi  $transaksi
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Transaksi $transaksi)
+    public function destroy(Transaksi $transaksi): RedirectResponse
     {
-        //
+        $imagePath = public_path() . './storage/images/' . $transaksi->file;
+
+        if ($imagePath > 0) {
+            unlink($imagePath);
+            $this->authorize('delete', $transaksi);
+            $transaksi->delete();
+        }
+
+
+        return redirect(route('transaksi.index'));
+    }
+
+    public function uploadFile(Request $request, Transaksi $transaksi): RedirectResponse
+    {
+        Validator::make($request->all(), [
+            'file' => 'required'
+        ])->validate();
+
+        $fileName = time() . '.' . $request->file->extension();
+        $request->file->move(public_path('storage/images'), $fileName);
+
+        $validated =  ([
+            'file' => $fileName
+        ]);
+
+        // $transaksi->update($validated);
+        $request->user()->transaksi()->update($validated);
+
+        return redirect(route('transaksi.index'));
     }
 }

@@ -4,20 +4,20 @@ import { Head, useForm } from "@inertiajs/react";
 import Transaksi from "@/Components/Transaksi";
 import InputError from "@/Components/InputError";
 import CurrencyFormat from "react-currency-format";
-import { FileInput, Label, Modal, Select, TextInput } from "flowbite-react";
+import { Label, Modal, Select, Table, TextInput } from "flowbite-react";
 import PrimaryButton from "@/Components/PrimaryButton";
 
 export default function Index({ auth, transaksis, pajaks, kategoris }) {
     const [open, setOpen] = useState(false);
-    const [selectedImage, setSelectedImage] = useState();
 
     const [jenis, setJenis] = useState([]);
     const [jenisId, setJenisId] = useState("");
     const [kategori, setKategori] = useState([]);
     const [kategoriId, setKategoriId] = useState("");
     const [percent, setPercent] = useState("");
-    const [totalPajak, setTotalPajak] = useState("");
-    const [pendapatan, setPendapatan] = useState("");
+
+    const [totalPajak, setTotalPajak] = useState(0);
+    const [pendapatan, setPendapatan] = useState(0);
 
     useEffect(() => {
         const getJenis = async () => {
@@ -27,12 +27,6 @@ export default function Index({ auth, transaksis, pajaks, kategoris }) {
         };
         getJenis();
     }, []);
-
-    const handleJenis = (e) => {
-        const getJenisId = e.target.value;
-        setJenisId(getJenisId);
-        setData("pajak_id", getJenisId);
-    };
 
     useEffect(() => {
         const getKategoriByPajak = async () => {
@@ -45,23 +39,6 @@ export default function Index({ auth, transaksis, pajaks, kategoris }) {
         getKategoriByPajak();
     }, [jenisId]);
 
-    const handleKategori = (e) => {
-        const getKategoriId = e.target.value;
-        setKategoriId(getKategoriId);
-        setData("kategori_pajak_id", getKategoriId);
-    };
-
-    const { data, setData, post, reset, errors, processing } = useForm({
-        pajak_id: pajaks.id,
-        kategori_pajak_id: kategoris.id,
-        nama_usaha: "",
-        jumlah_pendapatan: "",
-        jumlah_pajak: "",
-        tanggal_awal: "",
-        tanggal_akhir: "",
-        file: null,
-    });
-
     useEffect(() => {
         const getKategoriById = async () => {
             const res = await fetch(
@@ -73,43 +50,59 @@ export default function Index({ auth, transaksis, pajaks, kategoris }) {
         getKategoriById();
     }, [kategoriId]);
 
+    const handleJenis = (e) => {
+        const getJenisId = e.target.value;
+        setJenisId(getJenisId);
+        setData("pajak_id", getJenisId);
+    };
+
+    const handleKategori = (e) => {
+        const getKategoriId = e.target.value;
+        setKategoriId(getKategoriId);
+        setData("kategori_pajak_id", getKategoriId);
+    };
+
+    const { data, setData, post, reset, errors, processing, cancel } = useForm({
+        pajak_id: pajaks.id,
+        kategori_pajak_id: kategoris.id,
+        nama_usaha: "",
+        jumlah_pendapatan: "",
+        jumlah_pajak: "",
+        tanggal_awal: "",
+        tanggal_akhir: "",
+    });
+
     const handlePendapatan = (e) => {
-        const pendapatan = parseInt(e.target.value.replaceAll(".", ""));
-        console.log(pendapatan);
-        setPendapatan(pendapatan);
-        setData("jumlah_pendapatan", pendapatan);
+        const pendapatanValue = parseInt(e.target.value.replaceAll(".", ""));
+        setPendapatan(pendapatanValue);
+        setData("jumlah_pendapatan", pendapatanValue);
     };
 
-    const handlePercent = () => {
+    const calculate = (pendapatan) => {
         const persen = percent.data?.map((e) => e.percent);
-        const d = parseInt(pendapatan);
-        const total_pajak = (d * persen) / 100;
-        setTotalPajak(total_pajak);
-        setData("jumlah_pajak", total_pajak);
+        const total_pajak = (pendapatan * persen) / 100;
+        return total_pajak;
     };
 
-    const imageChange = (e) => {
-        if (e.target.files && e.target.files.length > 0) {
-            setSelectedImage(e.target.files[0]);
-            setData("file", e.target.files[0]);
-        }
-    };
+    useEffect(() => {
+        const pajakValue = calculate(pendapatan);
+        setTotalPajak(pajakValue);
+        setData("jumlah_pajak", totalPajak);
+    }, [totalPajak, pendapatan]);
+
+    // const imageChange = (e) => {
+    //     if (e.target.files && e.target.files.length > 0) {
+    //         setSelectedImage(e.target.files[0]);
+    //         setData("file", e.target.files[0]);
+    //     }
+    // };
 
     const handleSubmit = (e) => {
         e.preventDefault();
         post(route("transaksi.store"), {
             onSuccess: () => {
                 setOpen(false);
-                reset(
-                    "pajak_id",
-                    "kategori_pajak_id",
-                    "nama_usaha",
-                    "jumlah_pendapatan",
-                    "jumlah_pajak",
-                    "tanggal_awal",
-                    "tanggal_akhir",
-                    "file"
-                );
+                reset();
             },
         });
     };
@@ -134,6 +127,8 @@ export default function Index({ auth, transaksis, pajaks, kategoris }) {
                         <button
                             onClick={() => {
                                 setOpen(true);
+                                cancel();
+                                reset();
                             }}
                             className="px-4 py-2 bg-indigo-500 hover:bg-indigo-600 text-white rounded"
                         >
@@ -144,280 +139,225 @@ export default function Index({ auth, transaksis, pajaks, kategoris }) {
                     <Modal
                         show={open}
                         size="5xl"
-                        popup={true}
-                        onClose={() => setOpen(false)}
-                        className="overflow-hidden"
+                        onClose={() => {
+                            setOpen(false);
+                        }}
                     >
                         <Modal.Header>Form Pembayaran Pajak</Modal.Header>
                         <Modal.Body>
-                            <div className="grid w-full grid-cols-1 items-start gap-y-8 gap-x-6 sm:grid-cols-12 lg:gap-x-8">
-                                {selectedImage && (
-                                    <div className="aspect-w-2 aspect-h-3 overflow-hidden rounded-lg bg-gray-100 sm:col-span-4 lg:col-span-5">
-                                        <img
-                                            alt="image"
-                                            src={URL.createObjectURL(
-                                                selectedImage
-                                            )}
-                                            width={100}
+                            <form
+                                onSubmit={handleSubmit}
+                                method="POST"
+                                encType="multipart/form-data"
+                            >
+                                <div className="grid grid-cols-2 gap-y-2 gap-x-6">
+                                    <div>
+                                        <div className="block">
+                                            <Label
+                                                htmlFor="nama_usaha"
+                                                value="Nama Usaha"
+                                            />
+                                            <InputError
+                                                message={errors.nama_usaha}
+                                                className="text-xs"
+                                            />
+                                        </div>
+                                        <TextInput
+                                            id="nama_usaha"
+                                            type="text"
+                                            value={data.nama_usaha}
+                                            onChange={(e) =>
+                                                setData(
+                                                    "nama_usaha",
+                                                    e.target.value
+                                                )
+                                            }
+                                            autoComplete="off"
                                         />
                                     </div>
-                                )}
-                                <div className="sm:col-span-8 lg:col-span-7">
-                                    <form
-                                        onSubmit={handleSubmit}
-                                        method="POST"
-                                        encType="multipart/form-data"
-                                    >
-                                        <div>
-                                            <div className="block">
-                                                <Label
-                                                    htmlFor="nama_usaha"
-                                                    value="Nama Usaha"
-                                                />
-                                                <InputError
-                                                    message={errors.nama_usaha}
-                                                    className="text-xs"
-                                                />
+                                    <div>
+                                        <div className="block">
+                                            <Label
+                                                htmlFor="jumlah_pajak"
+                                                value="Jumlah Pajak"
+                                            />
+                                            <InputError
+                                                message={errors.jumlah_pajak}
+                                                className="text-xs"
+                                            />
+                                        </div>
+                                        <div className="relative rounded-md shadow-sm ">
+                                            <div className="pointer-event-none absolute inset-y-0 left-0 flex items-center pl-2 ">
+                                                <span className="text-gray-500 sm:text-sm">
+                                                    Rp
+                                                </span>
                                             </div>
-                                            <TextInput
-                                                id="nama_usaha"
-                                                type="text"
-                                                value={data.nama_usaha}
+                                            <CurrencyFormat
+                                                className="block w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm mb-2 pl-8 pr-12 cursor-not-allowed"
+                                                thousandSeparator={"."}
+                                                decimalSeparator={","}
+                                                value={totalPajak}
+                                                disabled={true}
+                                                readOnly={true}
+                                                allowNegative="false"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div className="block">
+                                            <Label
+                                                htmlFor="jenis_pajak"
+                                                value="Jenis Pajak"
+                                            />
+                                            <InputError
+                                                message={errors.pajak_id}
+                                                className="text-xs"
+                                            />
+                                        </div>
+                                        <Select
+                                            name="jenis_pajak"
+                                            onChange={(e) => handleJenis(e)}
+                                        >
+                                            <option
+                                                value=""
+                                                selected
+                                                disabled
+                                                hidden
+                                            >
+                                                -- Jenis Pajak --
+                                            </option>
+                                            {jenis.data?.map((d) => (
+                                                <option key={d.id} value={d.id}>
+                                                    {d.nama}
+                                                </option>
+                                            ))}
+                                        </Select>
+                                    </div>
+                                    <div>
+                                        <div className="block">
+                                            <Label
+                                                htmlFor="tanggal_awal"
+                                                value="Tanggal Awal"
+                                            />
+                                            <InputError
+                                                message={errors.tanggal_awal}
+                                            />
+                                        </div>
+                                        <input
+                                            name="tanggal_awal"
+                                            type="date"
+                                            className="block w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm mb-2"
+                                            value={data.tanggal_awal}
+                                            onChange={(e) =>
+                                                setData(
+                                                    "tanggal_awal",
+                                                    e.target.value
+                                                )
+                                            }
+                                        />
+                                    </div>
+                                    <div>
+                                        <div className="block">
+                                            <Label
+                                                htmlFor="kategori_pajak_id"
+                                                value="Kategori Pajak"
+                                            />
+                                            <InputError
+                                                message={
+                                                    errors.kategori_pajak_id
+                                                }
+                                                className="text-xs"
+                                            />
+                                        </div>
+                                        <Select
+                                            name="kategori"
+                                            onChange={(e) => handleKategori(e)}
+                                        >
+                                            <option
+                                                value=""
+                                                selected
+                                                disabled
+                                                hidden
+                                            >
+                                                -- Kategori Pajak --
+                                            </option>
+                                            {jenisId ? (
+                                                kategori.data?.map((k) => (
+                                                    <option
+                                                        key={k.id}
+                                                        value={k.id}
+                                                    >
+                                                        {k.nama}
+                                                    </option>
+                                                ))
+                                            ) : (
+                                                <option disabled>
+                                                    No Data Kategori
+                                                </option>
+                                            )}
+                                        </Select>
+                                    </div>
+                                    <div>
+                                        <div className="block">
+                                            <Label
+                                                htmlFor="tanggal_akhir"
+                                                value="Tanggal Akhir"
+                                            />
+                                            <InputError
+                                                message={errors.tanggal_akhir}
+                                            />
+                                        </div>
+                                        <input
+                                            name="tanggal_akhir"
+                                            type="date"
+                                            className="block w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm mb-2"
+                                            value={data.tanggal_akhir}
+                                            onChange={(e) =>
+                                                setData(
+                                                    "tanggal_akhir",
+                                                    e.target.value
+                                                )
+                                            }
+                                        />
+                                    </div>
+                                    <div>
+                                        <div className="block">
+                                            <Label
+                                                htmlFor="jumlah_pendapatan"
+                                                value="Jumlah Pendapatan"
+                                            />
+                                            <InputError
+                                                message={
+                                                    errors.jumlah_pendapatan
+                                                }
+                                                className="text-xs"
+                                            />
+                                        </div>
+                                        <div className="relative rounded-md shadow-sm ">
+                                            <div className="pointer-event-none absolute inset-y-0 left-0 flex items-center pl-2 ">
+                                                <span className="text-gray-500 sm:text-sm">
+                                                    Rp
+                                                </span>
+                                            </div>
+                                            <CurrencyFormat
+                                                className="block w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm mb-2 pl-8 pr-12"
+                                                thousandSeparator={"."}
+                                                decimalSeparator={","}
+                                                name="jumlah_pendapatan"
+                                                value={pendapatan}
                                                 onChange={(e) =>
-                                                    setData(
-                                                        "nama_usaha",
-                                                        e.target.value
-                                                    )
+                                                    handlePendapatan(e)
                                                 }
                                                 autoComplete="off"
+                                                allowNegative={false}
                                             />
                                         </div>
-                                        <div>
-                                            <div className="block">
-                                                <Label
-                                                    htmlFor="jenis_pajak"
-                                                    value="Jenis Pajak"
-                                                />
-                                                <InputError
-                                                    message={errors.pajak_id}
-                                                    className="text-xs"
-                                                />
-                                            </div>
-                                            <Select
-                                                name="jenis"
-                                                onChange={(e) => handleJenis(e)}
-                                            >
-                                                <option
-                                                    value=""
-                                                    selected
-                                                    disabled
-                                                    hidden
-                                                >
-                                                    -- Jenis Pajak --
-                                                </option>
-                                                {jenis.data?.map((d) => (
-                                                    <option
-                                                        key={d.id}
-                                                        value={d.id}
-                                                    >
-                                                        {d.nama}
-                                                    </option>
-                                                ))}
-                                            </Select>
-                                        </div>
-                                        <div>
-                                            <div className="block">
-                                                <Label
-                                                    htmlFor="kategori_pajak_id"
-                                                    value="Kategori Pajak"
-                                                />
-                                                <InputError
-                                                    message={
-                                                        errors.kategori_pajak_id
-                                                    }
-                                                    className="text-xs"
-                                                />
-                                            </div>
-                                            <Select
-                                                name="kategori"
-                                                onChange={(e) =>
-                                                    handleKategori(e)
-                                                }
-                                            >
-                                                <option
-                                                    value=""
-                                                    selected
-                                                    disabled
-                                                    hidden
-                                                >
-                                                    -- Kategori Pajak --
-                                                </option>
-                                                {jenisId ? (
-                                                    kategori.data?.map((k) => (
-                                                        <option
-                                                            key={k.id}
-                                                            value={k.id}
-                                                        >
-                                                            {k.nama}
-                                                        </option>
-                                                    ))
-                                                ) : (
-                                                    <option disabled>
-                                                        No Data Kategori
-                                                    </option>
-                                                )}
-                                            </Select>
-                                        </div>
-                                        <div>
-                                            <div className="block">
-                                                <Label
-                                                    htmlFor="jumlah_pendapatan"
-                                                    value="Jumlah Pendapatan"
-                                                />
-                                                <InputError
-                                                    message={
-                                                        errors.jumlah_pendapatan
-                                                    }
-                                                    className="text-xs"
-                                                />
-                                            </div>
-                                            <div className="relative rounded-md shadow-sm ">
-                                                <div className="pointer-event-none absolute inset-y-0 left-0 flex items-center pl-2 ">
-                                                    <span className="text-gray-500 sm:text-sm">
-                                                        Rp
-                                                    </span>
-                                                </div>
-                                                <CurrencyFormat
-                                                    className="block w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm mb-2 pl-8 pr-12"
-                                                    thousandSeparator={"."}
-                                                    decimalSeparator={","}
-                                                    name="jumlah_pendapatan"
-                                                    value={pendapatan}
-                                                    onChange={(e) =>
-                                                        handlePendapatan(e)
-                                                    }
-                                                    autoComplete="off"
-                                                />
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <div className="block">
-                                                <Label
-                                                    htmlFor="jumlah_pajak"
-                                                    value="Jumlah Pajak"
-                                                />
-                                                <InputError
-                                                    message={
-                                                        errors.jumlah_pajak
-                                                    }
-                                                    className="text-xs"
-                                                />
-                                            </div>
-                                            <div className="relative rounded-md shadow-sm ">
-                                                {jenisId && (
-                                                    <>
-                                                        <div className="pointer-event-none absolute inset-y-0 left-0 flex items-center pl-2 ">
-                                                            <span className="text-gray-500 sm:text-sm">
-                                                                Rp
-                                                            </span>
-                                                        </div>
-                                                        <CurrencyFormat
-                                                            className="block w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm mb-2 pl-8 pr-12"
-                                                            thousandSeparator={
-                                                                "."
-                                                            }
-                                                            decimalSeparator={
-                                                                ","
-                                                            }
-                                                            value={totalPajak}
-                                                            onChange={(e) =>
-                                                                handlePercent(e)
-                                                            }
-                                                        />
-                                                    </>
-                                                )}
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <div className="block">
-                                                <Label
-                                                    htmlFor="tanggal_awal"
-                                                    value="Tanggal Awal"
-                                                />
-                                                <InputError
-                                                    message={
-                                                        errors.tanggal_awal
-                                                    }
-                                                />
-                                            </div>
-                                            <input
-                                                name="tanggal_awal"
-                                                type="date"
-                                                className="block w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm mb-2"
-                                                value={data.tanggal_awal}
-                                                onChange={(e) =>
-                                                    setData(
-                                                        "tanggal_awal",
-                                                        e.target.value
-                                                    )
-                                                }
-                                            />
-                                        </div>
-                                        <div>
-                                            <div className="block">
-                                                <Label
-                                                    htmlFor="tanggal_akhir"
-                                                    value="Tanggal Akhir"
-                                                />
-                                                <InputError
-                                                    message={
-                                                        errors.tanggal_akhir
-                                                    }
-                                                />
-                                            </div>
-                                            <input
-                                                name="tanggal_akhir"
-                                                type="date"
-                                                className="block w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm mb-2"
-                                                value={data.tanggal_akhir}
-                                                onChange={(e) =>
-                                                    setData(
-                                                        "tanggal_akhir",
-                                                        e.target.value
-                                                    )
-                                                }
-                                            />
-                                        </div>
-                                        <div>
-                                            <div className="block">
-                                                <Label
-                                                    htmlFor="file"
-                                                    value="Upload File"
-                                                />
-                                                <InputError
-                                                    message={errors.file}
-                                                />
-                                            </div>
-                                            <input
-                                                name="file"
-                                                type="file"
-                                                accept="image/*"
-                                                className="block w-full sm:text-sm mb-2"
-                                                onChange={(e) => imageChange(e)}
-                                            />
-                                            {/* <FileInput
-                                                name="file"
-                                                type="file"
-                                                accept="image/*"
-                                                onChange={(e) => imageChange(e)}
-                                            /> */}
-                                        </div>
-                                        <PrimaryButton processing={processing}>
-                                            Simpan
-                                        </PrimaryButton>
-                                    </form>
+                                    </div>
                                 </div>
-                            </div>
+                                <PrimaryButton processing={processing}>
+                                    Simpan
+                                </PrimaryButton>
+                            </form>
                         </Modal.Body>
                     </Modal>
                     {/* end modal */}
@@ -427,98 +367,65 @@ export default function Index({ auth, transaksis, pajaks, kategoris }) {
                             <div className="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
                                 <h2>Record Pembayaran Anda : </h2>
                                 <br />
-                                <div className="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
-                                    <table className="min-w-full divide-y divide-gray-200">
-                                        <thead className="bg-gray-50">
-                                            <tr>
-                                                <th
-                                                    scope="col"
-                                                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                                                >
-                                                    No.
-                                                </th>
-                                                <th
-                                                    scope="col"
-                                                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                                                >
-                                                    Jenis Pajak
-                                                </th>
-                                                <th
-                                                    scope="col"
-                                                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                                                >
-                                                    Nama Usaha
-                                                </th>
-                                                <th
-                                                    scope="col"
-                                                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                                                >
-                                                    Jumlah Pendapatan
-                                                </th>
-                                                <th
-                                                    scope="col"
-                                                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                                                >
-                                                    Jumlah Pajak
-                                                </th>
-                                                <th
-                                                    scope="col"
-                                                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                                                >
-                                                    Tanggal Awal
-                                                </th>
-                                                <th
-                                                    scope="col"
-                                                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                                                >
-                                                    Tanggal Akhir
-                                                </th>
-                                                <th
-                                                    scope="col"
-                                                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                                                >
-                                                    Image
-                                                </th>
-                                                <th
-                                                    scope="col"
-                                                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                                                >
-                                                    Status
-                                                </th>
-                                                <th
-                                                    scope="col"
-                                                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                                                >
-                                                    Aksi
-                                                </th>
-                                            </tr>
-                                        </thead>
-                                        <tbody className="bg-white divide-y divide-gray-200">
+                                <div className="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg relative">
+                                    <Table>
+                                        <Table.Head className="bg-lime-300">
+                                            <Table.HeadCell>No.</Table.HeadCell>
+                                            <Table.HeadCell>
+                                                Nama Usaha
+                                            </Table.HeadCell>
+                                            <Table.HeadCell>
+                                                Jenis Pajak
+                                            </Table.HeadCell>
+                                            <Table.HeadCell>
+                                                Kategori Pajak
+                                            </Table.HeadCell>
+                                            <Table.HeadCell>
+                                                Jumlah Pendapatan
+                                            </Table.HeadCell>
+                                            <Table.HeadCell>
+                                                Jumlah Pajak
+                                            </Table.HeadCell>
+                                            <Table.HeadCell>
+                                                Tanggal Awal
+                                            </Table.HeadCell>
+                                            <Table.HeadCell>
+                                                Tanggal Akhir
+                                            </Table.HeadCell>
+                                            <Table.HeadCell>
+                                                Status
+                                            </Table.HeadCell>
+                                            <Table.HeadCell>
+                                                Aksi
+                                            </Table.HeadCell>
+                                        </Table.Head>
+                                        <Table.Body className="divide-y">
                                             {transaksis.map(
                                                 (transaksi, index) => (
                                                     <>
                                                         {transaksi.user.id ===
                                                             auth.user.id && (
-                                                            <tr
+                                                            <Table.Row
                                                                 key={
                                                                     transaksi.id
                                                                 }
+                                                                className="bg-white dark:border-gray-700 dark:bg-gray-800"
                                                             >
-                                                                <td className="px-6 py-6">
+                                                                <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
                                                                     {index + 1}
-                                                                </td>
+                                                                </Table.Cell>
                                                                 <Transaksi
                                                                     transaksi={
                                                                         transaksi
                                                                     }
                                                                 />
-                                                            </tr>
+                                                            </Table.Row>
                                                         )}
                                                     </>
                                                 )
                                             )}
-                                        </tbody>
-                                    </table>
+                                        </Table.Body>
+                                    </Table>
                                 </div>
                             </div>
                         </div>
