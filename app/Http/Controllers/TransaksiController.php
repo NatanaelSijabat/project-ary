@@ -116,7 +116,6 @@ class TransaksiController extends Controller
             'jumlah_pajak' => 'required',
             'tanggal_awal' => 'required',
             'tanggal_akhir' => 'required',
-            'file' => 'required'
         ]);
 
         // dd($validated);

@@ -39,23 +39,11 @@ export default function Transaksi({ transaksi }) {
         reset();
     }, []);
 
-    const submit = (e) => {
-        e.preventDefault();
-        patch(route("transaksi.update", transaksi.id), {
-            onSuccess: () => {
-                setModalEdit(false);
-                reset();
-            },
-        });
-    };
-
     const [jenis, setJenis] = useState([]);
     const [jenisId, setJenisId] = useState("");
     const [kategori, setKategori] = useState([]);
     const [kategoriId, setKategoriId] = useState("");
     const [percent, setPercent] = useState("");
-    const [totalPajak, setTotalPajak] = useState("");
-    const [pendapatan, setPendapatan] = useState("");
 
     const [pajakNama, setPajakNama] = useState("");
     const [kategoriNama, setKategoriNama] = useState("");
@@ -64,6 +52,9 @@ export default function Transaksi({ transaksi }) {
     const [modalEdit, setModalEdit] = useState(false);
     const [modalDelete, setModalDelete] = useState(false);
     const [modalUploadFile, setModalUploadFile] = useState(false);
+
+    const [pendapatan, setPendapatan] = useState(data.jumlah_pendapatan);
+    const [totalPajak, setTotalPajak] = useState(data.jumlah_pajak);
 
     useEffect(() => {
         const pajakId = data.pajak_id;
@@ -119,19 +110,33 @@ export default function Transaksi({ transaksi }) {
         setData("kategori_pajak_id", getKategoriId);
     };
 
-    const handlePendapatan = (e) => {
-        const pendapatan = parseInt(e.target.value.replaceAll(".", ""));
-        setPendapatan(pendapatan);
-        setData("jumlah_pendapatan", pendapatan);
+    const submit = (e) => {
+        e.preventDefault();
+        patch(route("transaksi.update", transaksi.id), {
+            onSuccess: () => {
+                setModalEdit(false);
+                reset();
+            },
+        });
     };
 
-    const handleJumlahPajak = (e) => {
-        const persen = percent.data?.map((e) => e.percent);
-        const d = parseInt(pendapatan);
-        const total_pajak = (d * persen) / 100;
-        setTotalPajak(total_pajak);
-        setData("jumlah_pajak", total_pajak);
+    const handlePendapatan = (e) => {
+        const pendapatanValue = parseInt(e.target.value.replaceAll(".", ""));
+        const pajakValue = calculate(pendapatanValue);
+        setPendapatan(pendapatanValue);
+        setData("jumlah_pendapatan", pendapatanValue);
+        setTotalPajak(pajakValue);
     };
+
+    const calculate = (pendapatan) => {
+        const persen = percent.data?.map((e) => e.percent);
+        const total_pajak = (pendapatan * persen) / 100;
+        return total_pajak;
+    };
+
+    useEffect(() => {
+        setData("jumlah_pajak", totalPajak);
+    }, [pendapatan]);
 
     const imageChange = (e) => {
         if (e.target.files && e.target.files.length > 0) {
@@ -172,13 +177,7 @@ export default function Transaksi({ transaksi }) {
                     >
                         <MdDeleteForever className="text-xl" />
                     </button>
-                    <button
-                        className="flex"
-                        onClick={() => setModalUploadFile(true)}
-                    >
-                        <span>Upload</span>
-                        <FaFileUpload className="text-xl" />
-                    </button>
+
                     <button className="mr-1">
                         <a href={"transaksi/pdf/" + transaksi.id}>
                             <HiOutlineDownload className="text-xl" />
@@ -188,6 +187,18 @@ export default function Transaksi({ transaksi }) {
             );
         }
         return e;
+    };
+
+    const imageView = (result) => {
+        if (transaksi.file.length > 0) {
+            result = <img src={`storage/images/${transaksi.file}`} />;
+        } else {
+            result = (
+                <Button onClick={() => setModalUploadFile(true)}>Upload</Button>
+            );
+        }
+
+        return result;
     };
 
     const rupiah = (number) => {
@@ -240,9 +251,6 @@ export default function Transaksi({ transaksi }) {
             <Table.Cell className="px-6 py-6 whitespace-nowrap">
                 {moment(transaksi.tanggal_akhir).format("D MMMM YYYY")}
             </Table.Cell>
-            {/* <Table.Cell className="px-1 py-1 whitespace-nowrap">
-                <img src={`storage/images/${transaksi.file}`} />
-            </Table.Cell> */}
             <Table.Cell className="px-6 py-6 whitespace-nowrap">
                 <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full">
                     {status()}
@@ -250,6 +258,9 @@ export default function Transaksi({ transaksi }) {
             </Table.Cell>
             <Table.Cell className="px-6 py-6 whitespace-nowrap">
                 {action()}
+            </Table.Cell>
+            <Table.Cell className="px-6 py-6 whitespace-nowrap">
+                {imageView()}
             </Table.Cell>
             <Modal
                 show={modalDelete}
@@ -386,10 +397,10 @@ export default function Transaksi({ transaksi }) {
                                                     className="block w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm mb-2 pl-8 pr-12"
                                                     thousandSeparator={"."}
                                                     decimalSeparator={","}
-                                                    value={data.jumlah_pajak}
-                                                    onChange={(e) =>
-                                                        handleJumlahPajak(e)
-                                                    }
+                                                    value={totalPajak}
+                                                    readOnly={true}
+                                                    disabled={true}
+                                                    allowNegative="false"
                                                 />
                                             </>
                                         )}
@@ -516,11 +527,12 @@ export default function Transaksi({ transaksi }) {
                                             thousandSeparator={"."}
                                             decimalSeparator={","}
                                             name="pendapatan"
-                                            value={data.jumlah_pendapatan}
+                                            value={pendapatan}
                                             onChange={(e) =>
                                                 handlePendapatan(e)
                                             }
                                             autoComplete="off"
+                                            allowNegative={false}
                                         />
                                     </div>
                                 </div>

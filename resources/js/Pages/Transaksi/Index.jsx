@@ -72,30 +72,24 @@ export default function Index({ auth, transaksis, pajaks, kategoris }) {
         tanggal_akhir: "",
     });
 
-    const handlePendapatan = (e) => {
-        const pendapatanValue = parseInt(e.target.value.replaceAll(".", ""));
-        setPendapatan(pendapatanValue);
-        setData("jumlah_pendapatan", pendapatanValue);
-    };
-
     const calculate = (pendapatan) => {
         const persen = percent.data?.map((e) => e.percent);
         const total_pajak = (pendapatan * persen) / 100;
         return total_pajak;
     };
 
-    useEffect(() => {
-        const pajakValue = calculate(pendapatan);
+    const handlePendapatan = (e) => {
+        const pendapatanValue = parseInt(e.target.value.replaceAll(".", ""));
+        const pajakValue = calculate(pendapatanValue);
+
         setTotalPajak(pajakValue);
+        setPendapatan(pendapatanValue);
+        setData("jumlah_pendapatan", pendapatanValue);
+    };
+
+    useEffect(() => {
         setData("jumlah_pajak", totalPajak);
     }, [totalPajak, pendapatan]);
-
-    // const imageChange = (e) => {
-    //     if (e.target.files && e.target.files.length > 0) {
-    //         setSelectedImage(e.target.files[0]);
-    //         setData("file", e.target.files[0]);
-    //     }
-    // };
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -398,6 +392,7 @@ export default function Index({ auth, transaksis, pajaks, kategoris }) {
                                             <Table.HeadCell>
                                                 Aksi
                                             </Table.HeadCell>
+                                            <Table.HeadCell />
                                         </Table.Head>
                                         <Table.Body className="divide-y">
                                             {transaksis.map(
