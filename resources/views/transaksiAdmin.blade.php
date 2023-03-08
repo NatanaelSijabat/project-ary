@@ -46,6 +46,11 @@
         </tbody>
     </table>
     <p>Dibuat Tanggal : <span>{{ $data->created_at }}</span></p>
+    <div class="page-break"></div>
+    <h1>Page 2</h1>
+    <div>
+        <img src="{{ public_path('storage/images/' . $data->file) }}" alt="image" width="100" height="100">
+    </div>
 </body>
 
 </html>

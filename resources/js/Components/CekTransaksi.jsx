@@ -27,6 +27,22 @@ export default function CekTransaksi({ transaksi }) {
         return result;
     };
 
+    const donwload = (result) => {
+        if (transaksi.file.length > 0) {
+            result = (
+                <a
+                    className="p-4 hover:cursor-pointer"
+                    href={"cek/pdf/" + transaksi.id}
+                >
+                    <HiOutlineDownload className="text-2xl" />
+                </a>
+            );
+        } else {
+            result = <></>;
+        }
+        return result;
+    };
+
     const action = (result) => {
         if (transaksi.isCheck === 0) {
             result = (
@@ -91,12 +107,7 @@ export default function CekTransaksi({ transaksi }) {
             </Table.Cell>
             <Table.Cell className="p-6 whitespace-nowrap">
                 <div className="flex">
-                    <a
-                        className="p-4 hover:cursor-pointer"
-                        href={"cek/pdf/" + transaksi.id}
-                    >
-                        <HiOutlineDownload className="text-2xl" />
-                    </a>
+                    {donwload()}
                     <button onClick={() => setOpenDelete(true)}>
                         <MdDeleteForever className="text-2xl mr-2" />
                     </button>

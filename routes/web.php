@@ -43,7 +43,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::resource('/kategori', KategoriPajakController::class)
             ->only(['index', 'store', 'update', 'destroy'])
             ->middleware(['auth', 'verified']);
-        Route::get('/cek/pdf/{id}', [PdfController::class, 'generatePDF'])->name('pdf');
+        Route::get('/cek/pdf/{id}', [PdfController::class, 'generatePDFAdmin'])->name('pdf');
     });
 
     Route::group(['middleware' => 'checkRole:user'], function () {

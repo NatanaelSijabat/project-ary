@@ -17,4 +17,14 @@ class PdfController extends Controller
 
         return $pdf->download('file.pdf');
     }
+
+    public function generatePDFAdmin($id)
+    {
+        $data = Transaksi::with('user:id,name,npwpd', 'pajak:id,nama')->where('id', $id)->get();
+
+
+        $pdf = FacadePdf::loadView('transaksiAdmin', ['data' => $data]);
+
+        return $pdf->download('file.pdf');
+    }
 }
