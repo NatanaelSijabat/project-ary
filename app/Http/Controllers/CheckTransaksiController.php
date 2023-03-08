@@ -25,6 +25,7 @@ class CheckTransaksiController extends Controller
             ->join('pajaks', 'pajak_id', '=', 'pajaks.id')
             ->join('kategori_pajaks', 'kategori_pajak_id', '=', 'kategori_pajaks.id')
             ->select('transaksis.*', 'users.npwpd', 'users.name', 'pajaks.nama as jenis_nama', 'kategori_pajaks.nama as kategori_nama')
+            ->orderBy('transaksis.isCheck', 'asc')
             ->get();
 
         // return response()->json($data);
