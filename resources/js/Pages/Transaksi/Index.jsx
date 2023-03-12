@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import UserLayout from "@/Layouts/UserLayout";
-import { Head, useForm } from "@inertiajs/react";
+import { Head, useForm, usePage } from "@inertiajs/react";
 import Transaksi from "@/Components/Transaksi";
 import InputError from "@/Components/InputError";
 import CurrencyFormat from "react-currency-format";
@@ -72,12 +72,6 @@ export default function Index({ auth, transaksis, pajaks, kategoris }) {
         tanggal_akhir: "",
     });
 
-    const calculate = (pendapatan) => {
-        const persen = percent.data?.map((e) => e.percent);
-        const total_pajak = (pendapatan * persen) / 100;
-        return total_pajak;
-    };
-
     const handlePendapatan = (e) => {
         const pendapatanValue = parseInt(e.target.value.replaceAll(".", ""));
         const pajakValue = calculate(pendapatanValue);
@@ -87,9 +81,21 @@ export default function Index({ auth, transaksis, pajaks, kategoris }) {
         setData("jumlah_pendapatan", pendapatanValue);
     };
 
+    const calculate = (pendapatan) => {
+        const persen = percent.data?.map((e) => e.percent);
+
+        if (persen == 0) {
+            const total_pajak = Math.round(pendapatan / 11);
+            return total_pajak;
+        } else {
+            const total_pajak = (pendapatan * persen) / 100;
+            return total_pajak;
+        }
+    };
+
     useEffect(() => {
         setData("jumlah_pajak", totalPajak);
-    }, [totalPajak, pendapatan]);
+    }, [pendapatan]);
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -193,7 +199,7 @@ export default function Index({ auth, transaksis, pajaks, kategoris }) {
                                                 value={totalPajak}
                                                 disabled={true}
                                                 readOnly={true}
-                                                allowNegative="false"
+                                                allowNegative={false}
                                             />
                                         </div>
                                     </div>
@@ -390,9 +396,11 @@ export default function Index({ auth, transaksis, pajaks, kategoris }) {
                                                 Status
                                             </Table.HeadCell>
                                             <Table.HeadCell>
+                                                Image
+                                            </Table.HeadCell>
+                                            <Table.HeadCell>
                                                 Aksi
                                             </Table.HeadCell>
-                                            <Table.HeadCell />
                                         </Table.Head>
                                         <Table.Body className="divide-y">
                                             {transaksis.map(

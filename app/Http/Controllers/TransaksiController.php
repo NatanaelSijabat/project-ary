@@ -8,7 +8,6 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Models\Pajak;
 use Illuminate\Support\Facades\Validator;
-use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\RedirectResponse;
 
 class TransaksiController extends Controller
@@ -56,9 +55,6 @@ class TransaksiController extends Controller
             'tanggal_awal' => ['required'],
             'tanggal_akhir' => ['required'],
         ])->validate();
-
-        // $fileName = time() . '.' . $request->file->extension();
-        // $request->file->move(public_path('storage/images'), $fileName);
 
         $validated = ([
             'pajak_id' => $request->pajak_id,
@@ -133,33 +129,37 @@ class TransaksiController extends Controller
      */
     public function destroy(Transaksi $transaksi): RedirectResponse
     {
-        $imagePath = public_path() . './storage/images/' . $transaksi->file;
 
-        if ($imagePath > 0) {
+        if ($transaksi->file  === "") {
+            $this->authorize('delete', $transaksi);
+            $transaksi->delete();
+        } else {
+            $imagePath = public_path() . './storage/images/' . $transaksi->file;
             unlink($imagePath);
             $this->authorize('delete', $transaksi);
             $transaksi->delete();
         }
-
 
         return redirect(route('transaksi.index'));
     }
 
     public function uploadFile(Request $request, Transaksi $transaksi): RedirectResponse
     {
+        $this->authorize('upload', $transaksi);
+
         Validator::make($request->all(), [
             'file' => 'required'
         ])->validate();
 
+
         $fileName = time() . '.' . $request->file->extension();
         $request->file->move(public_path('storage/images'), $fileName);
 
-        $validated =  ([
+        $validated = ([
             'file' => $fileName
         ]);
 
-        // $transaksi->update($validated);
-        $request->user()->transaksi()->update($validated);
+        $transaksi->update($validated);
 
         return redirect(route('transaksi.index'));
     }

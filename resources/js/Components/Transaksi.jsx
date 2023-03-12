@@ -11,6 +11,7 @@ import InputError from "./InputError";
 import PrimaryButton from "@/Components/PrimaryButton";
 import CurrencyFormat from "react-currency-format";
 import { FaFileUpload } from "react-icons/fa";
+import ImageView from "./ImageView";
 
 export default function Transaksi({ transaksi }) {
     const {
@@ -34,10 +35,10 @@ export default function Transaksi({ transaksi }) {
         file: null,
     });
 
-    useEffect(() => {
-        setData(data);
-        reset();
-    }, []);
+    // useEffect(() => {
+    //     setData(data);
+    //     reset();
+    // }, []);
 
     const [jenis, setJenis] = useState([]);
     const [jenisId, setJenisId] = useState("");
@@ -61,6 +62,7 @@ export default function Transaksi({ transaksi }) {
         setJenisId(pajakId);
         const kategoriPajakId = data.kategori_pajak_id;
         setKategoriId(kategoriPajakId);
+
         const getJenisById = async () => {
             const req = await fetch(
                 `http://localhost:8000/api/pajak/${jenisId}`
@@ -145,21 +147,20 @@ export default function Transaksi({ transaksi }) {
         }
     };
 
-    const status = (result) => {
+    const status = () => {
         if (transaksi.isCheck === 0) {
-            result = (
+            return (
                 <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-200">
                     Menunggu Konfirmasi
                 </span>
             );
         } else {
-            result = (
+            return (
                 <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-200 ">
                     Sudah Di Bayar
                 </span>
             );
         }
-        return result;
     };
 
     const action = (e) => {
@@ -189,18 +190,6 @@ export default function Transaksi({ transaksi }) {
         return e;
     };
 
-    const imageView = (result) => {
-        if (transaksi.file.length > 0) {
-            result = <img src={`storage/images/${transaksi.file}`} />;
-        } else {
-            result = (
-                <Button onClick={() => setModalUploadFile(true)}>Upload</Button>
-            );
-        }
-
-        return result;
-    };
-
     const rupiah = (number) => {
         return new Intl.NumberFormat("id-ID", {
             style: "currency",
@@ -210,7 +199,7 @@ export default function Transaksi({ transaksi }) {
 
     const handleUploadFile = (e) => {
         e.preventDefault();
-        post(route("transaksi.upload"), {
+        post(route("transaksi.upload", transaksi.id), {
             onSuccess: () => {
                 setModalUploadFile(false);
                 reset();
@@ -257,10 +246,13 @@ export default function Transaksi({ transaksi }) {
                 </span>
             </Table.Cell>
             <Table.Cell className="px-6 py-6 whitespace-nowrap">
-                {action()}
+                <ImageView
+                    open={setModalUploadFile}
+                    file={`${transaksi.file}`}
+                />
             </Table.Cell>
             <Table.Cell className="px-6 py-6 whitespace-nowrap">
-                {imageView()}
+                {action()}
             </Table.Cell>
             <Modal
                 show={modalDelete}
@@ -400,7 +392,7 @@ export default function Transaksi({ transaksi }) {
                                                     value={totalPajak}
                                                     readOnly={true}
                                                     disabled={true}
-                                                    allowNegative="false"
+                                                    allowNegative={false}
                                                 />
                                             </>
                                         )}

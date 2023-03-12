@@ -52,7 +52,7 @@ Route::group(['middleware' => 'auth'], function () {
             ->only('index', 'store', 'update', 'destroy')
             ->middleware('auth', 'verified');
         Route::get('/transaksi/pdf/{id}', [PdfController::class, 'generatePDF'])->name('pdf');
-        Route::post('/transaksi/upload', [TransaksiController::class, 'uploadFile'])->name('transaksi.upload');
+        Route::post('/transaksi/upload/{transaksi}', [TransaksiController::class, 'uploadFile'])->name('transaksi.upload');
     });
 });
 

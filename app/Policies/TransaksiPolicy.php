@@ -56,6 +56,12 @@ class TransaksiPolicy
         return $user->id === $transaksi->user_id;
     }
 
+    public function upload(User $user, Transaksi $transaksi): bool
+    {
+        return $user->id === $transaksi->user_id;
+    }
+
+
     /**
      * Determine whether the user can delete the model.
      *

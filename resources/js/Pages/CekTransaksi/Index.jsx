@@ -21,8 +21,8 @@ export default function Index({ auth, transaksis }) {
 
             <br />
 
-            <div className="w-full mx-auto p-4 sm:p-6 lg:p-8">
-                <div className="flex">
+            <div className="w-full mx-auto p-2 sm:p-6 lg:p-2">
+                <div>
                     <TextInput
                         id="search"
                         type="text"
@@ -33,7 +33,7 @@ export default function Index({ auth, transaksis }) {
                         onChange={(e) => setInput(e.target.value)}
                     />
                 </div>
-                <div className="relative overflow-x-auto shadow-md mt-3">
+                <div className="shadow-md mt-4">
                     <Table>
                         <Table.Head className="bg-lime-300">
                             <Table.HeadCell>No.</Table.HeadCell>

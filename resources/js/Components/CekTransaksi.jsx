@@ -7,9 +7,12 @@ import { HiOutlineDownload } from "react-icons/hi";
 import { MdDeleteForever } from "react-icons/md";
 import { HiOutlineExclamationCircle } from "react-icons/hi2";
 import DangerButton from "./DangerButton";
+import { BsThreeDotsVertical } from "react-icons/bs";
 
 export default function CekTransaksi({ transaksi }) {
     const [opendelete, setOpenDelete] = useState(false);
+    const [showAction, setShowAction] = useState(false);
+
     const status = (result) => {
         if (transaksi.isCheck === 0) {
             result = (
@@ -105,7 +108,15 @@ export default function CekTransaksi({ transaksi }) {
             <Table.Cell className="px-6 py-6 whitespace-nowrap">
                 {status()}
             </Table.Cell>
-            <Table.Cell className="p-6 whitespace-nowrap">
+            <Table.Cell>
+                <button
+                    onClick={() => setShowAction(true)}
+                    className=" p-1 hover:bg-gray-300 hover:rounded-md"
+                >
+                    <BsThreeDotsVertical />
+                </button>
+            </Table.Cell>
+            {showAction && (
                 <div className="flex">
                     {donwload()}
                     <button onClick={() => setOpenDelete(true)}>
@@ -145,7 +156,7 @@ export default function CekTransaksi({ transaksi }) {
                         {action()}
                     </form>
                 </div>
-            </Table.Cell>
+            )}
         </>
     );
 }

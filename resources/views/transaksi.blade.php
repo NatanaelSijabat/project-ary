@@ -46,6 +46,7 @@
         </tbody>
     </table>
     <p>Dibuat Tanggal : <span>{{ $data->created_at }}</span></p>
+    <p>{{ $terbilang }}</p>
 </body>
 
 </html>
